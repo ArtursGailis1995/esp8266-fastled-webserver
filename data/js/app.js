@@ -140,6 +140,101 @@ function addBooleanField(field) {
   $("#form").append(template);
 }
 
+function toggleColorSelector(pattern) {
+  var patterns = [
+    'Solid Color'
+  ];
+  if (patterns.indexOf(pattern) > -1) {
+    $('#colorPaletteTemplate').show();
+    $('#form-group-solidColor').show();
+    $('#colorTemplate').show();
+    $('#form-group-section-solidColor').hide();
+  } else {
+    $('#colorPaletteTemplate').hide();
+    $('#form-group-solidColor').hide();
+    $('#colorTemplate').hide();
+    $('#form-group-section-solidColor').hide();
+  }
+}
+
+function toggleCoolingSelector(pattern) {
+  var coolingPatterns = [
+    'Fire',
+    'Water'
+  ];
+  if (coolingPatterns.indexOf(pattern) > -1) {
+    $('#form-group-section-fire').show();
+    $('#form-group-cooling').show();
+    $('#form-group-sparking').show();
+    $('#form-group-sparking').show();
+  } else {
+    $('#form-group-section-fire').hide();
+    $('#form-group-cooling').hide();
+    $('#form-group-sparking').hide();
+    $('#form-group-sparking').hide();
+  }
+}
+
+function toggleTwinkleSelector(pattern) {
+  var twinklePatterns =
+    [
+      "Rainbow Twinkles",
+      "Snow Twinkles",
+      "Cloud Twinkles",
+      "Incandescent Twinkles"
+    ];
+  if (twinklePatterns.indexOf(pattern) > -1) {
+    $('#form-group-twinkleSpeed').show();
+    $('#form-group-section-twinkles').show();
+    $('#form-group-twinkleDensity').show();
+  } else {
+    $('#form-group-twinkleSpeed').hide();
+    $('#form-group-section-twinkles').hide();
+    $('#form-group-twinkleDensity').hide();
+  }
+}
+
+function toggleSpeedSelector(pattern) {
+  var speedPatterns =
+    [
+      "Sinelon",
+      "Beat"
+    ];
+  if (speedPatterns.indexOf(pattern) > -1) {
+    $('#form-group-speed').show();
+
+  } else {
+    $('#form-group-speed').hide();
+  }
+}
+
+function togglePalletteSelector(pattern) {
+  var pallettePatterns =
+    [
+      "Confetti",
+      "Sinelon",
+      "Beat"
+    ];
+  if (pallettePatterns.indexOf(pattern) > -1) {
+    $('#form-group-palette').show();
+
+  } else {
+    $('#form-group-palette').hide();
+  }
+}
+
+function toggleSections(pattern) {
+  toggleColorSelector(pattern);
+  toggleCoolingSelector(pattern);
+  toggleTwinkleSelector(pattern);
+  toggleSpeedSelector(pattern);
+  togglePalletteSelector(pattern);
+}
+
+$.fn.toggleSections = function (pattern) {
+  toggleSections(pattern);
+}
+
 function addSelectField(field) {
   var template = $("#selectTemplate").clone();
 
@@ -168,6 +263,10 @@ function addSelectField(field) {
   select.change(function() {
     var value = template.find("#" + id + " option:selected").index();
     postValue(field.name, value);
+
+    if (id == 'input-pattern') {
+      toggleSections(field.options[select.val()]);
+    }
   });
 
   var previousButton = template.find(".btn-previous");
@@ -181,6 +280,9 @@ function addSelectField(field) {
       value = count - 1;
     select.val(value);
     postValue(field.name, value);
+    if (id == 'input-pattern') {
+      toggleSections(field.options[select.val()]);
+    }
   });
 
   nextButton.click(function() {
@@ -191,9 +293,12 @@ function addSelectField(field) {
       value = 0;
     select.val(value);
     postValue(field.name, value);
+    if (id == 'input-pattern') {
+      toggleSections(field.options[select.val()]);
+    }
   });
 
-  $("#form").append(template);
+  $("#form").append(template).toggleSections(field.options[select.val()]);
 }
 
 function addColorFieldPicker(field) {
@@ -326,6 +431,10 @@ function addColorFieldPicker(field) {
   });
 
   $("#form").append(template);
+
+  setTimeout(function () {
+  toggleSections($("#input-pattern option:selected").text());
+  }, 0);
 }
 
 function addColorFieldPalette(field) {

@@ -220,7 +220,7 @@ void setup() {
 
   Serial.begin(115200);
   delay(100);
-  Serial.setDebugOutput(true);
+  Serial.setDebugOutput(false);
 
   FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);         // for WS2812 (Neopixel)
   //FastLED.addLeds<LED_TYPE,DATA_PIN,CLK_PIN,COLOR_ORDER>(leds, NUM_LEDS); // for APA102 (Dotstar)

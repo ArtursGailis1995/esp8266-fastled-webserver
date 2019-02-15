@@ -277,6 +277,22 @@ const TProgmemRGBPalette16 RedGreenBlue_p FL_PROGMEM =
    CRGB::Blue, CRGB::Blue, CRGB::Blue, CRGB::Blue,
    CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Red };
 
+// Easter style twinkles
+#define easter_purple 0x1D003B //purple
+#define easter_pink1 0x930009 //pink1
+#define easter_pink2 0x830019  // pink2
+#define easter_pink3 0x72002A  // pink3
+#define easter_yellow1 0x726203 //yellow1
+#define easter_yellow2 0x647303  //  yellow2
+#define easter_lime_green 0x248B03 //lime green
+#define easter_teal 0x009826 //teal
+
+const TProgmemRGBPalette16 Easter_p FL_PROGMEM =
+{   easter_purple, easter_pink3, easter_yellow2, easter_lime_green,
+    easter_teal, easter_purple, easter_pink3, easter_yellow2,
+    easter_lime_green, easter_teal, easter_purple, easter_pink3,
+    easter_yellow2, easter_lime_green, easter_teal, easter_purple };
+
 // A pure "fairy light" palette with some brightness variations
 #define HALFFAIRY ((CRGB::FairyLight & 0xFEFEFE) / 2)
 #define QUARTERFAIRY ((CRGB::FairyLight & 0xFCFCFC) / 4)
@@ -353,6 +369,12 @@ void blueIncandescentTwinkles()
 void redGreenBlueTwinkles()
 {
   twinkleFoxPalette = RedGreenBlue_p;
+  drawTwinkles();
+}
+
+void easterTwinkles()
+{
+  twinkleFoxPalette = Easter_p;
   drawTwinkles();
 }
 

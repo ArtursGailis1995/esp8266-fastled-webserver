@@ -189,6 +189,7 @@ function toggleTwinkleSelector(pattern) {
       "Holly Twinkles",
       "Ice Twinkles",
       "Party Twinkles",
+      "Easter Twinkles",
       "Forest Twinkles",
       "Lava Twinkles",
       "Fire Twinkles",

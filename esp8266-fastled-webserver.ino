@@ -160,6 +160,7 @@ PatternAndNameList patterns = {
   { redGreenBlueTwinkles,   "Red & Green & Blue Twinkles" },
   { redGreenWhiteTwinkles,  "Red, Green & White Twinkles" },
   { fairyLightTwinkles,     "Fairy Light Twinkles" },
+  { easterTwinkles,         "Easter Twinkles" },
   { snow2Twinkles,          "Snow 2 Twinkles" },
   { hollyTwinkles,          "Holly Twinkles" },
   { iceTwinkles,            "Ice Twinkles" },

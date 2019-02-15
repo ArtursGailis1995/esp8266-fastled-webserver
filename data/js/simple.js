@@ -14,6 +14,7 @@ var ignoreColorChange = false;
 var patterns = [
   "Pride",
   "Color Waves",
+  "Gradient Sweep",
 
   "Rainbow Twinkles",
   "Snow Twinkles",
@@ -23,8 +24,11 @@ var patterns = [
   "Retro C9 Twinkles",
   "Red & White Twinkles",
   "Blue & White Twinkles",
+  "Blue & Incandescent Twinkles",
+  "Red & Green & Blue Twinkles",
   "Red, Green & White Twinkles",
   "Fairy Light Twinkles",
+  "Easter Twinkles",
   "Snow 2 Twinkles",
   "Holly Twinkles",
   "Ice Twinkles",

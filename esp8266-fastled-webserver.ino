@@ -145,6 +145,7 @@ typedef PatternAndName PatternAndNameList[];
 PatternAndNameList patterns = {
   { pride,                  "Pride" },
   { colorWaves,             "Color Waves" },
+  { gradientSweeper,        "Gradient Sweep" },
 
   // twinkle patterns
   { rainbowTwinkles,        "Rainbow Twinkles" },
@@ -1076,6 +1077,11 @@ void fire()
 void water()
 {
   heatMap(IceColors_p, false);
+}
+
+void gradientSweeper()
+{
+  palettetest( leds, NUM_LEDS, gCurrentPalette);
 }
 
 // Pride2015 by Mark Kriegsman: https://gist.github.com/kriegsman/964de772d64c502760e5

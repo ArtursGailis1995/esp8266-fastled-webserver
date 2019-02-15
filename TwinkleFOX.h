@@ -270,6 +270,13 @@ const TProgmemRGBPalette16 BlueIncandescent_p FL_PROGMEM =
    CRGB::Blue, CRGB::Blue, CRGB::Blue, CRGB::Blue,
    CRGB::Blue, CRGB::FairyLight, CRGB::FairyLight, CRGB::FairyLight };
 
+// Evenly distributed reg, green and blue twinkles
+const TProgmemRGBPalette16 RedGreenBlue_p FL_PROGMEM =
+{  CRGB::Red, CRGB::Red, CRGB::Red, CRGB::Red,
+   CRGB::Green, CRGB::Green, CRGB::Green, CRGB::Green,
+   CRGB::Blue, CRGB::Blue, CRGB::Blue, CRGB::Blue,
+   CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Red };
+
 // A pure "fairy light" palette with some brightness variations
 #define HALFFAIRY ((CRGB::FairyLight & 0xFEFEFE) / 2)
 #define QUARTERFAIRY ((CRGB::FairyLight & 0xFCFCFC) / 4)
@@ -340,6 +347,12 @@ void blueWhiteTwinkles()
 void blueIncandescentTwinkles()
 {
   twinkleFoxPalette = BlueIncandescent_p;
+  drawTwinkles();
+}
+
+void redGreenBlueTwinkles()
+{
+  twinkleFoxPalette = RedGreenBlue_p;
   drawTwinkles();
 }
 

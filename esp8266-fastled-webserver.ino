@@ -156,6 +156,7 @@ PatternAndNameList patterns = {
   { retroC9Twinkles,        "Retro C9 Twinkles" },
   { redWhiteTwinkles,       "Red & White Twinkles" },
   { blueWhiteTwinkles,      "Blue & White Twinkles" },
+  { blueIncandescentTwinkles,      "Blue & Incandescent Twinkles" },
   { redGreenWhiteTwinkles,  "Red, Green & White Twinkles" },
   { fairyLightTwinkles,     "Fairy Light Twinkles" },
   { snow2Twinkles,          "Snow 2 Twinkles" },

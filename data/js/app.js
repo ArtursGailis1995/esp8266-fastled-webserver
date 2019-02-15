@@ -178,10 +178,22 @@ function toggleCoolingSelector(pattern) {
 function toggleTwinkleSelector(pattern) {
   var twinklePatterns =
     [
-      "Rainbow Twinkles",
-      "Snow Twinkles",
-      "Cloud Twinkles",
-      "Incandescent Twinkles"
+      "Retro C9 Twinkles",
+      "Red & White Twinkles",
+      "Blue & White Twinkles",
+      "Blue & Incandescent Twinkles",
+      "Red & Green & Blue Twinkles",
+      "Red, Green & White Twinkles",
+      "Fairy Light Twinkles",
+      "Snow 2 Twinkles",
+      "Holly Twinkles",
+      "Ice Twinkles",
+      "Party Twinkles",
+      "Forest Twinkles",
+      "Lava Twinkles",
+      "Fire Twinkles",
+      "Cloud 2 Twinkles",
+      "Ocean Twinkles",
     ];
   if (twinklePatterns.indexOf(pattern) > -1) {
     $('#form-group-twinkleSpeed').show();

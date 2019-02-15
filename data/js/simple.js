@@ -173,7 +173,7 @@ function addPatternButtons(patternField) {
 
   $('.grid-pattern').isotope({
     itemSelector: '.grid-item-pattern',
-    layoutMode: 'fitRows'
+    layoutMode: 'fitRows',
   });
 
   $("#pattern-button-" + patternField.value).attr("class", "grid-item-pattern btn btn-primary");

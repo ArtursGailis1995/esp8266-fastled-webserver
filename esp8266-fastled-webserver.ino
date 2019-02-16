@@ -1005,7 +1005,7 @@ void rainbowSolid()
 void confetti()
 {
   // random colored speckles that blink in and fade smoothly
-  fadeToBlackBy( leds, NUM_LEDS, 10);
+  fadeToBlackBy( leds, NUM_LEDS, speed);
   int pos = random16(NUM_LEDS);
   // leds[pos] += CHSV( gHue + random8(64), 200, 255);
   leds[pos] += ColorFromPalette(palettes[currentPaletteIndex], gHue + random8(64));

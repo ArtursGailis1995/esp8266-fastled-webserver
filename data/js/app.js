@@ -211,7 +211,9 @@ function toggleSpeedSelector(pattern) {
   var speedPatterns =
     [
       "Sinelon",
-      "Beat"
+      "Beat",
+      "Confetti",
+      "White Sparkles"
     ];
   if (speedPatterns.indexOf(pattern) > -1) {
     $('#form-group-speed').show();

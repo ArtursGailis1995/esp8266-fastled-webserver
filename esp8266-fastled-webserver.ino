@@ -174,6 +174,7 @@ PatternAndNameList patterns = {
 
   { rainbow,                "Rainbow" },
   { rainbowWithGlitter,     "Rainbow With Glitter" },
+  { sparkles,               "White Sparkles" },
   { rainbowSolid,           "Solid Rainbow" },
   { confetti,               "Confetti" },
   { sinelon,                "Sinelon" },
@@ -1008,6 +1009,15 @@ void confetti()
   int pos = random16(NUM_LEDS);
   // leds[pos] += CHSV( gHue + random8(64), 200, 255);
   leds[pos] += ColorFromPalette(palettes[currentPaletteIndex], gHue + random8(64));
+}
+
+void sparkles()
+{
+  // white sparkles that blink in and fade quickly
+  fadeToBlackBy( leds, NUM_LEDS, speed);
+  int pos = random16(NUM_LEDS);
+  // leds[pos] += CHSV( gHue + random8(64), 200, 255);
+  leds[pos] += CRGB::White;
 }
 
 void sinelon()

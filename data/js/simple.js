@@ -41,6 +41,7 @@ var patterns = [
 
   "Rainbow",
   "Rainbow With Glitter",
+  "White Sparkles",
   "Solid Rainbow",
   "Confetti",
   "Sinelon",

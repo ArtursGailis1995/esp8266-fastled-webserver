@@ -113,15 +113,15 @@ FieldList fields = {
   { "speed", "Speed", NumberFieldType, 1, 255, getSpeed },
   { "autoplay", "Autoplay", SectionFieldType },
   { "autoplay", "Autoplay", BooleanFieldType, 0, 1, getAutoplay },
-  { "autoplayDuration", "Autoplay Duration", NumberFieldType, 0, 255, getAutoplayDuration },
-  { "solidColor", "Solid Color", SectionFieldType },
+  { "autoplayDuration", "Autoplay duration", NumberFieldType, 0, 255, getAutoplayDuration },
+  { "solidColor", "Solid color", SectionFieldType },
   { "solidColor", "Color", ColorFieldType, 0, 255, getSolidColor },
   { "fire", "Fire & Water", SectionFieldType },
   { "cooling", "Cooling", NumberFieldType, 0, 255, getCooling },
   { "sparking", "Sparking", NumberFieldType, 0, 255, getSparking },
   { "twinkles", "Twinkles", SectionFieldType },
-  { "twinkleSpeed", "Twinkle Speed", NumberFieldType, 0, 8, getTwinkleSpeed },
-  { "twinkleDensity", "Twinkle Density", NumberFieldType, 0, 8, getTwinkleDensity },
+  { "twinkleSpeed", "Twinkle speed", NumberFieldType, 0, 8, getTwinkleSpeed },
+  { "twinkleDensity", "Twinkle density", NumberFieldType, 0, 8, getTwinkleDensity },
 };
 
 uint8_t fieldCount = ARRAY_SIZE(fields);

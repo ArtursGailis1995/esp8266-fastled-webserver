@@ -15,6 +15,7 @@ var patterns = [
   "Pride",
   "Color Waves",
   "Gradient Sweep",
+  "Gradient Showcase",
 
   "Rainbow Twinkles",
   "Snow Twinkles",

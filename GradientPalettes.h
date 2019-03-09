@@ -511,8 +511,42 @@ const TProgmemRGBGradientPalettePtr gGradientPalettes[] = {
   BlacK_Red_Magenta_Yellow_gp,
   Blue_Cyan_Yellow_gp };
 
-
 // Count of how many cpt-city gradients are defined:
 const uint8_t gGradientPaletteCount =
   sizeof( gGradientPalettes) / sizeof( TProgmemRGBGradientPalettePtr );
 
+const String gradientPaletteNames[gGradientPaletteCount] = {
+  "Sunset",
+  "Rivendell",
+  "Ocean breeze",
+  "RGI 15",
+  "Retro",
+  "Analogous",
+  "Pink splash",
+  "Coral reef",
+  "Ocean breeze 2",
+  "Pink splash 2",
+  "Vintage",
+  "Departue",
+  "Landscape",
+  "Landscape 2",
+  "Rainbow sherbet",
+  "Cosmic",
+  "Cosmic 2",
+  "Golden waters",
+  "Nightly glow",
+  "Vintage 2",
+  "Evening heat",
+  "Fuschia",
+  "Emerald dragon",
+  "Lava",
+  "Fire",
+  "Colorfull",
+  "Magenta evening",
+  "Pink & purple",
+  "Autumn",
+  "Black, blue, magenta, white",
+  "Black, magenta, red",
+  "Black, red, magenta, yellow",
+  "Blue, cyan, yellow",
+};

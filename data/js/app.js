@@ -238,12 +238,27 @@ function togglePalletteSelector(pattern) {
   }
 }
 
+function toggleGradientPalletteSelector(pattern) {
+  var gradientPallettePatterns =
+    [
+      "Gradient Sweep"
+    ];
+    
+  if (gradientPallettePatterns.indexOf(pattern) > -1) {
+    $('#form-group-gradientPalette').show();
+
+  } else {
+    $('#form-group-gradientPalette').hide();
+  }
+}
+
 function toggleSections(pattern) {
   toggleColorSelector(pattern);
   toggleCoolingSelector(pattern);
   toggleTwinkleSelector(pattern);
   toggleSpeedSelector(pattern);
   togglePalletteSelector(pattern);
+  toggleGradientPalletteSelector(pattern);
 }
 
 $.fn.toggleSections = function (pattern) {

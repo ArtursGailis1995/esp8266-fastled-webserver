@@ -52,7 +52,7 @@ ESP8266HTTPUpdateServer httpUpdateServer;
 
 #include "FSBrowser.h"
 
-#define DATA_PIN      2
+#define DATA_PIN      10
 #define LED_TYPE      WS2812B
 #define COLOR_ORDER   GRB
 #define NUM_LEDS      300
@@ -104,6 +104,8 @@ extern const TProgmemRGBGradientPalettePtr gGradientPalettes[];
 
 uint8_t gCurrentPaletteNumber = 0;
 
+uint8_t currentGradientPaletteIndex = 0;
+
 CRGBPalette16 gCurrentPalette( CRGB::Black);
 CRGBPalette16 gTargetPalette( gGradientPalettes[0] );
 
@@ -146,6 +148,7 @@ PatternAndNameList patterns = {
   { pride,                  "Pride" },
   { colorWaves,             "Color Waves" },
   { gradientSweeper,        "Gradient Sweep" },
+  { gradientShowcase,       "Gradient Showcase" },
 
   // twinkle patterns
   { rainbowTwinkles,        "Rainbow Twinkles" },
@@ -398,6 +401,18 @@ void setup() {
     String value = webServer.arg("value");
     setPaletteName(value);
     sendInt(currentPaletteIndex);
+  });
+
+    webServer.on("/gradientPalette", HTTP_POST, []() {
+    String value = webServer.arg("value");
+    setGradientPalette(value.toInt());
+    sendInt(currentGradientPaletteIndex);
+  });
+
+  webServer.on("/gradientPaletteName", HTTP_POST, []() {
+    String value = webServer.arg("value");
+    setGradientPaletteName(value);
+    sendInt(currentGradientPaletteIndex);
   });
 
   webServer.on("/brightness", HTTP_POST, []() {
@@ -805,6 +820,12 @@ void loadSettings()
     currentPaletteIndex = 0;
   else if (currentPaletteIndex >= paletteCount)
     currentPaletteIndex = paletteCount - 1;
+
+  currentGradientPaletteIndex = EEPROM.read(9);
+  if (currentGradientPaletteIndex < 0)
+    currentGradientPaletteIndex = 0;
+  else if (currentGradientPaletteIndex >= gGradientPaletteCount)
+    currentGradientPaletteIndex = gGradientPaletteCount - 1;
 }
 
 void setPower(uint8_t value)
@@ -923,6 +944,29 @@ void setPaletteName(String name)
   for (uint8_t i = 0; i < paletteCount; i++) {
     if (paletteNames[i] == name) {
       setPalette(i);
+      break;
+    }
+  }
+}
+
+void setGradientPalette(uint8_t value)
+{
+  if (value >= gGradientPaletteCount)
+    value = gGradientPaletteCount - 1;
+
+  currentGradientPaletteIndex = value;
+
+  EEPROM.write(9, currentGradientPaletteIndex);
+  EEPROM.commit();
+
+  broadcastInt("gradientPalette", currentGradientPaletteIndex);
+}
+
+void setGradientPaletteName(String name)
+{
+  for (uint8_t i = 0; i < gGradientPaletteCount; i++) {
+    if (gradientPaletteNames[i] == name) {
+      setGradientPalette(i);
       break;
     }
   }
@@ -1090,6 +1134,11 @@ void water()
 }
 
 void gradientSweeper()
+{
+  palettetest( leds, NUM_LEDS, gGradientPalettes[currentGradientPaletteIndex]);
+}
+
+void gradientShowcase()
 {
   palettetest( leds, NUM_LEDS, gCurrentPalette);
 }

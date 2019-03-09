@@ -73,6 +73,22 @@ String getPalettes() {
   return json;
 }
 
+String getGradientPalette() {
+  return String(currentGradientPaletteIndex);
+}
+
+String getGradientPalettes() {
+  String json = "";
+
+  for (uint8_t i = 0; i < gGradientPaletteCount; i++) {
+    json += "\"" + gradientPaletteNames[i] + "\"";
+    if (i < gGradientPaletteCount - 1)
+      json += ",";
+  }
+
+  return json;
+}
+
 String getAutoplay() {
   return String(autoplay);
 }
@@ -110,6 +126,7 @@ FieldList fields = {
   { "brightness", "Brightness", NumberFieldType, 1, 255, getBrightness },
   { "pattern", "Pattern", SelectFieldType, 0, patternCount, getPattern, getPatterns },
   { "palette", "Palette", SelectFieldType, 0, paletteCount, getPalette, getPalettes },
+  { "gradientPalette", "Gradient palette", SelectFieldType, 0, gGradientPaletteCount, getGradientPalette, getGradientPalettes },
   { "speed", "Speed", NumberFieldType, 1, 255, getSpeed },
   { "autoplay", "Autoplay", SectionFieldType },
   { "autoplay", "Autoplay", BooleanFieldType, 0, 1, getAutoplay },

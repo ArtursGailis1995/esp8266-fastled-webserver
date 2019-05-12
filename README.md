@@ -1,7 +1,7 @@
 FastLED + ESP8266 Web Server
 =========
 
-Control an addressable LED strip with an ESP8266 via a web browser or infrared remote control.
+Control an addressable LED strip with an ESP8266 via a WEB browser or infrared remote control.
 
 Hardware
 --------

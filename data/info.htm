@@ -2,88 +2,116 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LED controller</title>
-  <!-- request CSS from the ESP8266 web server -->
-  <link rel="stylesheet" href="css/bootstrap.min.css">
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="icon" href="images/rgb.png">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LED controller</title>
+    <!-- request CSS from the ESP8266 web server -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="images/rgb.png">
 </head>
 
 <body>
-  <nav class="navbar navbar-default navbar-static-top" id="top">
-    <div class="container">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">
+    <nav class="navbar navbar-default navbar-static-top" id="top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">
           <span class="sr-only">Toggle navigation</span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="/"><img src="images/rgb.png" alt="LOGO" style="width: 24px; height: 24px;" /></a>
-      </div>
-      <div class="collapse navbar-collapse" id="navbar-collapse-1">
-        <ul class="nav navbar-nav">
-          <li><a href="/">LED controller<span class="sr-only">(current)</span></a></li>
-          <li><a href="/simple.htm" title="Simple mode">Simple mode</a></li>
-          <li><a href="/edit.htm" title="Filesystem editor">Filesystem editor</a></li>
-          <li><a href="/update" title="Firmware update">Firmware update</a></li>
-		      <li><a href="/wifi.htm" title="Wi-Fi settings">Wi-Fi settings</a></li>
-          <li class="active"><a href="/info.htm" title="Information">Information</a></li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-          <li>
-            <a href="https://github.com/ArtursGailis1995/esp8266-fastled-webserver">
+                <a class="navbar-brand" href="/"><img src="images/rgb.png" alt="LOGO" style="width: 24px; height: 24px;" /></a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a href="/">LED controller<span class="sr-only">(current)</span></a></li>
+                    <li><a href="/simple.htm" title="Simple mode">Simple mode</a></li>
+                    <li><a href="/edit.htm" title="Filesystem editor">Filesystem editor</a></li>
+                    <li><a href="/update.htm" title="Firmware update">Firmware update</a></li>
+                    <li><a href="/wifi.htm" title="Wi-Fi settings">Wi-Fi settings</a></li>
+                    <li class="active"><a href="/info.htm" title="Information">Information</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="https://github.com/ArtursGailis1995/esp8266-fastled-webserver">
               <img style="height: 16px;" src="images/github.ico" alt="GIT"/>
             </a>
-          </li>
-        </ul>
-      </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div id="container" class="container">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">Most recent changes (08.08.2019)</h3>
+            </div>
+            <div class="panel-body">
+                <span>- Updated Bootstrap v3 theme to <code>Flatly</code></span><br />
+                <span>- Info page desing updated</span><br />
+                <span>- Updated info on <b>WiFi settings</b> page and disabled unavailable WiFi options</span><br />
+                <span>- Updated <b>Simple mode</b> with content sections</span><br />
+                <span>- Improved <b>Firmware update</b> page</span><br />
+            </div>
+        </div>
+
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">Recent changes (09.03.2019)</h3>
+            </div>
+            <div class="panel-body">
+                <span>- <code>Gradient sweep</code> effect now offers choice of 33 new effects</span><br />
+                <span>- Modified <code>Gradient sweep</code> effect to offer manual gradient choice to user</span><br />
+                <span>- Added new fields and arrays to store latest effects in memory and EEPROM</span><br />
+                <span>- Added <code>Gradient showcase</code> effect (cycles all gradients automatically)</span><br />
+            </div>
+        </div>
+
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">Previous changes (17.02.2019)</h3>
+            </div>
+            <div class="panel-body">
+                <span>- This information page added</span><br />
+                <span>- Link to GitHub added in navigation bar</span><br />
+                <span>- Strings and field names updated to match project wide</span><br />
+                <span>- Added speed control for <code>White Sparkles</code> and <code>Confetti</code> effect</span><br />
+                <span>- Added <code>White Sparkles</code> effect</span><br />
+                <span>- Added <code>Gradient Sweep</code> effect which cycles built-in gradients</span><br />
+                <span>- Added <code>Easter Twinkles</code> effect</span><br />
+                <span>- Fixed <code>Twinkle speed</code> and <code>Twinkle density</code> controls not showing</span><br />
+                <span>- Added <code>Red & Green & Blue Twinkles</code> effect</span><br />
+                <span>- Added <code>Blue & Incandescent Twinkles</code> effect</span><br />
+                <span>- Changed MCU communication pin to pin <code>2</code></span><br />
+                <span>- Added disclaimer on <code><a href="wifi.htm">Wi-Fi settings</a></code> page indicating broken feature</span><br />
+                <span>- Reduced HTML and image size to improve performance</span><br />
+                <span>- Updated <code><a href="https://ace.c9.io/" title="Ace library">Ace library</a></code> to the latest version</span><br />
+                <span>- Added navigation bar in <code>Simple mode</code></span><br />
+                <span>- Added missing library <code><a href="https://isotope.metafizzy.co/" title="Isotope library">Isotope</a></code> for <code>Simple mode</code></span><br />
+                <span>- Fixed and renamed menu items</span><br />
+                <span>- Replaced icons and images</span><br />
+            </div>
+        </div>
+
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Contributors</h3>
+            </div>
+            <div class="panel-body">
+                <span><b>Based on original work:</b> <a href="https://github.com/jasoncoon/esp8266-fastled-webserver" title="Jason Coon on Github">FastLED + ESP8266 Web Server by Jason Coon</a></span><br />
+                <span><b>This release modified and maintained by:</b> <a href="https://github.com/ArtursGailis1995/esp8266-fastled-webserver" title="Arturs Gailis on Github">FastLED + ESP8266 Web Server by Arturs Gailis</a></span><br />
+                <span><b>Idea of hiding UI parts:</b> <a href="https://github.com/alvinycheung/esp8266-fastled-webserver" title="Alvin Cheung on Github">FastLED + ESP8266 Web Server by Alvin Cheung</a></span><br />
+                <span><b>Theme by:</b> <a href="https://bootswatch.com/3/flatly/"  title="Bootswatch: Flatly">Bootswatch: Flatly</a></span><br />
+                <span><b>LED driver library:</b> <a href="https://github.com/FastLED/FastLED" title="FastLED on Github">FastLED library</a></span><br />
+            </div>
+        </div>
     </div>
-  </nav>
-
-  <div id="container" class="container">
-  <h3>Most recent changes (09.03.2019)</h3>
-    <div class="alert alert-success" role="alert">
-  <span>- <code>Gradient sweep</code> effect now offers choice of 33 new effects</span><br />
-  <span>- Modified <code>Gradient sweep</code> effect to offer manual gradient choice to user</span><br />
-  <span>- Added new fields and arrays to store latest effects in memory and EEPROM</span><br />
-  <span>- Added <code>Gradient showcase</code> effect (cycles all gradients automatically)</span><br />
-  </div>
-
-  <h3>Previous changes (17.02.2019)</h3>
-    <div class="alert alert-success" role="alert">
-	<span>- This information page added</span><br />
-	<span>- Link to GitHub added in navigation bar</span><br />
-	<span>- Strings and field names updated to match project wide</span><br />
-	<span>- Added speed control for <code>White Sparkles</code> and <code>Confetti</code> effect</span><br />
-	<span>- Added <code>White Sparkles</code> effect</span><br />
-	<span>- Added <code>Gradient Sweep</code> effect which cycles built-in gradients</span><br />
-	<span>- Added <code>Easter Twinkles</code> effect</span><br />
-	<span>- Fixed <code>Twinkle speed</code> and <code>Twinkle density</code> controls not showing</span><br />
-	<span>- Added <code>Red & Green & Blue Twinkles</code> effect</span><br />
-	<span>- Added <code>Blue & Incandescent Twinkles</code> effect</span><br />
-	<span>- Changed MCU communication pin to pin <code>2</code></span><br />
-	<span>- Added disclaimer on <code><a href="wifi.htm">Wi-Fi settings</a></code> page indicating broken feature</span><br />
-	<span>- Reduced HTML and image size to improve performance</span><br />
-	<span>- Updated <code><a href="https://ace.c9.io/" title="Ace library">Ace library</a></code> to the latest version</span><br />
-	<span>- Added navigation bar in <code>Simple mode</code></span><br />
-	<span>- Added missing library <code><a href="https://isotope.metafizzy.co/" title="Isotope library">Isotope</a></code> for <code>Simple mode</code></span><br />
-	<span>- Fixed and renamed menu items</span><br />
-	<span>- Replaced icons and images</span><br />
-    </div>
-	<h3>Contributors</h3>
-	<div class="alert alert-warning" role="alert">
-	<span><b>Based on original work from:</b> <a href="https://github.com/jasoncoon/esp8266-fastled-webserver" title="Jason Coon on Github">FastLED + ESP8266 Web Server by Jason Coon</a></span><br />
-	<span><b>This release modified and maintained by:</b> <a href="https://github.com/ArtursGailis1995/esp8266-fastled-webserver" title="Arturs Gailis on Github">FastLED + ESP8266 Web Server by Arturs Gailis</a></span><br />
-	<span><b>Idea of hiding UI parts from:</b> <a href="https://github.com/alvinycheung/esp8266-fastled-webserver" title="Alvin Cheung on Github">FastLED + ESP8266 Web Server by Alvin Cheung</a></span><br />
-	<span><b>LED driver library:</b> <a href="https://github.com/FastLED/FastLED" title="FastLED on Github">FastLED library</a></span><br />
-  </div>
-
-  <!-- request js from the ESP8266 web server -->
-  <script src="js/jquery-3.1.1.min.js"></script>
-  <script src="js/bootstrap.min.js"></script>
+    <!-- request js from the ESP8266 web server -->
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
 </body>
+
 </html>

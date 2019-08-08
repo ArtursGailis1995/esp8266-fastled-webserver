@@ -8,7 +8,7 @@
     <title>LED controller</title>
     <!-- request CSS from the ESP8266 web server -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/simple.css">
     <link rel="icon" href="images/rgb.png">
 </head>
 
@@ -29,14 +29,14 @@
                     <li><a href="/">LED controller<span class="sr-only">(current)</span></a></li>
                     <li><a href="/simple.htm" title="Simple mode">Simple mode</a></li>
                     <li><a href="/edit.htm" title="Filesystem editor">Filesystem editor</a></li>
-                    <li><a href="/update.htm" title="Firmware update">Firmware update</a></li>
-                    <li class="active"><a href="/wifi.htm" title="Wi-Fi settings">Wi-Fi settings</a></li>
+                    <li class="active"><a href="/update.htm" title="Firmware update">Firmware update</a></li>
+                    <li><a href="/wifi.htm" title="Wi-Fi settings">Wi-Fi settings</a></li>
                     <li><a href="/info.htm" title="Information">Information</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li>
                         <a href="https://github.com/ArtursGailis1995/esp8266-fastled-webserver">
-              <img style="height: 16px;" src="/images/github.ico" alt="GIT"/>
+              <img style="height: 16px;" src="/images/github.ico" alt="GIT" />
             </a>
                     </li>
                 </ul>
@@ -45,43 +45,30 @@
     </nav>
 
     <div id="container" class="container">
-        <div class="panel panel-warning">
-            <div class="panel-heading">
-                <h3 class="panel-title">Attention</h3>
-            </div>
+        <div class="panel panel-danger">
+            <div class="panel-heading">ESP8266 firmware update</div>
             <div class="panel-body">
-                Due to changes in WiFi implementation, this section is now out-of-order and any changes made to WiFi settings will not be saved to ESP8266 memory! To change your SSID and password, edit <b>Secrets.h</b> file and re-upload sketch, or compile
-                it and upload from <a href="/update">Firmware update</a> section!
+                <div class="well">
+                    <span>Firmware must be updated by providing compiled *.bin file.</span><br />
+                    <span>ESP8266 must be power-cycled at least once after update before it can be updated again (disconnected from power source not restarted)!</span><br />
+                </div>
+                <div class="well">
+                    <form method='POST' action='/update' enctype='multipart/form-data'>
+                        <input type='file' name='update'><br />
+                        <input type='submit' value='Update' class="btn-danger">
+                    </form>
+                </div>
             </div>
-        </div>
-        <div class="well">
-            <form class="form-horizontal" id="form" action="/wifi" method="post">
-                <div class="form-group">
-                    <label for="inputSSID" class="col-sm-2 control-label">SSID</label>
-                    <div class="col-sm-10">
-                        <input type="text" autocapitalize="none" class="form-control" id="inputSSID" name="ssid" placeholder="Wi-Fi network name" disabled="">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="inputPassword" class="col-sm-2 control-label">Password</label>
-                    <div class="col-sm-10">
-                        <input type="password" class="form-control" id="inputPassword" name="password" placeholder="Wi-Fi password" disabled="">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-default disabled" disabled="">Connect</button>
-                    </div>
-                </div>
-            </form>
         </div>
     </div>
 
     <!-- request js from the ESP8266 web server -->
     <script src="js/jquery-3.1.1.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/r-websocket.min.js"></script>
+    <script src="js/simple.js"></script>
+    <!-- Added Isotope Library to fix SIMPLE mode -->
+    <script src="js/isotope.pkgd.min.js"></script>
 </body>
 
 </html>

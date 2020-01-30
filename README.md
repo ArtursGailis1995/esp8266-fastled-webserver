@@ -3,9 +3,6 @@ FastLED + ESP8266 Web Server
 
 Control an addressable RGB LED strip with an ESP8266 via a WEB browser or infrared remote control.
 
-Hardware
---------
-
 ## Parts used for this project
 
 * ESP8266 NodeMCU V3 developement board<br/>
@@ -16,10 +13,18 @@ Hardware
 
 Features
 --------
-* Turn the NeoPixel Ring on and off
+* Turn LED strip on or off
 * Adjust the brightness
-* Change the display pattern
+* Enable automatic pattern switching
+* Adjust pattern speed and intensity
+* Sweep built-in gradients
+* Set autoplay duration
+* Change the pattern
 * Adjust the color
+* Use full or simple control mode
+* Directly edit SPIFFS file system contents (HTML, JS, CSS, fonts)
+* Upload new firmware via OTA
+* Many, many more!
 
 Web App
 --------

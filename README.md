@@ -11,25 +11,8 @@ Hardware
 * ESP8266 NodeMCU V3 developement board<br/>
 <img src="/images/NodeMCU_ESP8266.jpg" alt="ESP8266" width="350"/>
 
-##### Addressable LED strip
-
-[![Adafruit NeoPixel Ring](https://www.adafruit.com/images/145x109/1586-00.jpg)](https://www.adafruit.com/product/1586)
-
-[Adafruit NeoPixel Ring]
-
-Other hardware:
-
-* [3.3V to 5V Logic Level Shifter](http://www.digikey.com/product-detail/en/texas-instruments/SN74HCT245N/296-1612-5-ND/277258) (required if LEDs "glitch")
-
-Recommended by [Adafruit NeoPixel "Best Practices"](https://learn.adafruit.com/adafruit-neopixel-uberguide/best-practices) to help protect LEDs from current onrush:
-* [1000µF Capacitor](http://www.digikey.com/product-detail/en/panasonic-electronic-components/ECA-1EM102/P5156-ND/245015)
-* [300 to 500 Ohm resistor](https://www.digikey.com/product-detail/en/stackpole-electronics-inc/CF14JT470R/CF14JT470RCT-ND/1830342)
-
-Optional shield to make everything more tidy:
-
-[![Wemos D1 Mini ESP8266 LED & Level Shifter Shield](https://d3s5r33r268y59.cloudfront.net/13194/products/thumbs/2017-05-06T15:02:37.208Z-IMG_20170506_100623.jpg.114x76_q85_pad_rcrop.jpg)](https://www.tindie.com/products/jasoncoon/wemos-d1-mini-esp8266-led-and-level-shifter-shield/)
-
-[Wemos D1 Mini ESP8266 LED & Level Shifter Shield](https://www.tindie.com/products/jasoncoon/wemos-d1-mini-esp8266-led-and-level-shifter-shield)
+* WS2812b or other addressable RGB LED strip (personally using 5 meters with 300 LEDs total)<br/>
+<img src="/images/WS2812b_LED.jpg" alt="WS2812b" width="350"/>
 
 Features
 --------

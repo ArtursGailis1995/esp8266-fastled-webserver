@@ -11,6 +11,9 @@ var postValueTimer = {};
 
 var ignoreColorChange = false;
 
+// if used behind HTTPS reverse proxy, replace 'ws' with 'wss' like in the line below
+//var ws = new ReconnectingWebSocket('wss://' + address + ':81/', ['arduino']);
+
 var ws = new ReconnectingWebSocket('ws://' + address + ':81/', ['arduino']);
 ws.debug = true;
 

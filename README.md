@@ -31,19 +31,19 @@ Web App
 
 The WEB App is a single page app that uses [jQuery](https://jquery.com) and [Bootstrap](http://getbootstrap.com).  It has buttons for On/Off, a slider for brightness, a pattern selector, and a color picker (powered by [jQuery MiniColors](http://labs.abeautifulsite.net/jquery-minicolors)).  Event handlers for the controls are used, so you don't have to click a 'Send' button after making changes to the LED strip parameters.  The brightness slider and the color picker use a delayed event handler, to prevent from flooding the ESP8266 WEB server with too many requests. As web app is stored in SPIFFS (on-board flash memory), uploading the files can be extremely slow, requiring several minutes, regardless of how large the files are.
 
-**Main page provides access to all features related to controlling RGB LED strip parameters and features**<br/>
+* **Main page provides access to all features related to controlling RGB LED strip parameters and features**<br/>
 <img src="/images/WEBApp_Main.jpg" alt="WEB App Main window" width="850"/>
 
-**Simple mode allows to control power state, change active mode or set static color of RGB LED strip**<br/>
+* **Simple mode allows to control power state, change active mode or set static color of RGB LED strip**<br/>
 <img src="/images/WEBApp_Simple.jpg" alt="WEB App Simple window" width="850"/>
 
-**Firmware update page allows to upload precompiled firmware to ESP8266 in order to update it without connecting to PC**<br/>
+* **Firmware update page allows to upload precompiled firmware to ESP8266 in order to update it without connecting to PC**<br/>
 <img src="/images/WEBApp_FW.jpg" alt="WEB App Firmware update window" width="850"/>
 
-**Wi-Fi settings page lets you set SSID and password of your home Wi-Fi network for connecting ESP8266 with your Wi-Fi router**<br/>
+* **Wi-Fi settings page lets you set SSID and password of your home Wi-Fi network for connecting ESP8266 with your Wi-Fi router**<br/>
 <img src="/images/WEBApp_WLAN.jpg" alt="WEB App Wi-Fi window" width="850"/>
 
-**Information page lists recent changes to this project and latest feature updates available to it**<br/>
+* **Information page lists recent changes to this project and latest feature updates available to it**<br/>
 <img src="/images/WEBApp_Info.jpg" alt="WEB App Information window" width="850"/>
 
 Installing

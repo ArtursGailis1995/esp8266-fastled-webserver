@@ -29,6 +29,8 @@ Features
 Web App
 --------
 
+The WEB App is a single page app that uses [jQuery](https://jquery.com) and [Bootstrap](http://getbootstrap.com).  It has buttons for On/Off, a slider for brightness, a pattern selector, and a color picker (powered by [jQuery MiniColors](http://labs.abeautifulsite.net/jquery-minicolors)).  Event handlers for the controls are used, so you don't have to click a 'Send' button after making changes to the LED strip parameters.  The brightness slider and the color picker use a delayed event handler, to prevent from flooding the ESP8266 WEB server with too many requests. As web app is stored in SPIFFS (on-board flash memory), uploading the files can be extremely slow, requiring several minutes, regardless of how large the files are.
+
 Main page provides access to all features related to controlling RGB LED strip parameters and features<br/>
 <img src="/images/WEBApp_Main.jpg" alt="WEB App Main window" width="850"/>
 
@@ -43,14 +45,6 @@ Wi-Fi settings page lets you set SSID and password of your home Wi-Fi network fo
 
 Information page lists recent changes to this project and latest feature updates available to it<br/>
 <img src="/images/WEBApp_Info.jpg" alt="WEB App Information window" width="850"/>
-
-Patterns are requested by the app from the ESP8266, so as new patterns are added, they're automatically listed in the app.
-
-The web app is stored in SPIFFS (on-board flash memory).
-
-The web app is a single page app that uses [jQuery](https://jquery.com) and [Bootstrap](http://getbootstrap.com).  It has buttons for On/Off, a slider for brightness, a pattern selector, and a color picker (using [jQuery MiniColors](http://labs.abeautifulsite.net/jquery-minicolors)).  Event handlers for the controls are wired up, so you don't have to click a 'Send' button after making changes.  The brightness slider and the color picker use a delayed event handler, to prevent from flooding the ESP8266 web server with too many requests too quickly.
-
-The only drawback to SPIFFS that I've found so far is uploading the files can be extremely slow, requiring several minutes, sometimes regardless of how large the files are.  It can be so slow that I've been just developing the web app and debugging locally on my desktop (with a hard-coded IP for the ESP8266), before uploading to SPIFFS and testing on the ESP8266.
 
 Installing
 -----------

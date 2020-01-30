@@ -65,34 +65,27 @@ The app depends on the following libraries, which must either be downloaded from
 - [IRremoteESP8266](https://github.com/sebastienwarin/IRremoteESP8266)
 - [Arduino WebSockets](https://github.com/Links2004/arduinoWebSockets)
 
-Download the app code from GitHub using the green Clone or Download button from [the GitHub project main page](https://github.com/jasoncoon/esp8266-fastled-webserver) and click Download ZIP. Decompress the ZIP file in your Arduino sketch folder.
+Download the app code from GitHub using the green Clone or Download button from [the GitHub project main page](https://github.com/ArtursGailis1995/esp8266-fastled-webserver) and click Download ZIP. Decompress the ZIP file in your Arduino sketch folder.
 
 The web app needs to be uploaded to the ESP8266's SPIFFS.  You can do this within the Arduino IDE after installing the [Arduino ESP8266FS tool](http://esp8266.github.io/Arduino/versions/2.3.0/doc/filesystem.html#uploading-files-to-file-system).
 
-With ESP8266FS installed upload the web app using `ESP8266 Sketch Data Upload` command in the Arduino Tools menu.
+With ESP8266FS installed, upload the WEB App using `ESP8266 Sketch Data Upload` command in the Arduino `Tools` menu.
 
-Then enter your wi-fi network SSID and password in the WiFi.h file, and upload the sketch using the Upload button.
+Remember to enter your Wi-Fi network SSID and password in the `Secrets.h` file, and upload the sketch using the `Upload` button. THe contents of the file `Secrets.h` must be like this:
 
-Compression
------------
+    // AP mode password
+    const char WiFiAPPSK[] = "your-password"; //Can leave as is
 
-The web app files can be gzip compressed before uploading to SPIFFS by running the following command:
-
-`gzip -r data/`
-
-The ESP8266WebServer will automatically serve any .gz file.  The file index.htm.gz will get served as index.htm, with the content-encoding header set to gzip, so the browser knows to decompress it.  The ESP8266WebServer doesn't seem to like the Glyphicon fonts gzipped, though, so I decompress them with this command:
-
-`gunzip -r data/fonts/`
+    // Wi-Fi network to connect to (if not in AP mode) 
+    char* ssid = "your-ssid";
+    char* password = "your-password";
 
 REST Web services
 -----------------
 
-The firmware implements basic [RESTful web services](https://en.wikipedia.org/wiki/Representational_state_transfer) using the ESP8266WebServer library.  Current values are requested with HTTP GETs, and values are set with POSTs using query string parameters.  It can run in connected or standalone access point modes.
+The firmware implements basic [RESTful web services](https://en.wikipedia.org/wiki/Representational_state_transfer) using the ESP8266WebServer library.  Current values are requested with `HTTP GETs`, and values are set with `HTTP POSTs` using query string parameters.
 
 Infrared Remote Control
 -----------------------
 
-Control via infrared remote control is also supported, via the [ESP8266 port of the IRremote library](https://github.com/sebastienwarin/IRremoteESP8266).
-
-[Adafruit NeoPixel Ring]:https://www.adafruit.com/product/1586
-[Adafruit HUZZAH ESP8266 Breakout]:https://www.adafruit.com/products/2471
+Controlling RGB LED strip via infrared remote control is also supported, via the [ESP8266 port of the IRremote library](https://github.com/sebastienwarin/IRremoteESP8266).

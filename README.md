@@ -80,6 +80,12 @@ Remember to enter your Wi-Fi network SSID and password in the `Secrets.h` file, 
     char* ssid = "your-ssid";
     char* password = "your-password";
 
+Set communication pin for your ESP8266 module in the sketch before uploading it. For example if you use D2 pin on your board, it will be pin GPIO4 pin in the code. You can see the ESP8266 pin mappings in the image below.
+
+    #define DATA_PIN      4    
+
+<img src="/images/GPIO_Explained.jpg" alt="GPIO of ESP8266 explained" width="650"/>
+
 REST Web services
 -----------------
 

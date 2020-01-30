@@ -71,7 +71,7 @@ The web app needs to be uploaded to the ESP8266's SPIFFS.  You can do this withi
 
 With ESP8266FS installed, upload the WEB App using `ESP8266 Sketch Data Upload` command in the Arduino `Tools` menu.
 
-Remember to enter your Wi-Fi network SSID and password in the `Secrets.h` file, and upload the sketch using the `Upload` button. THe contents of the file `Secrets.h` must be like this:
+Remember to enter your Wi-Fi network SSID and password in the `Secrets.h` file, and upload the sketch using the `Upload` button. The contents of the file `Secrets.h` must be like this:
 
     // AP mode password
     const char WiFiAPPSK[] = "your-password"; //Can leave as is

@@ -50,14 +50,14 @@ Installing
 -----------
 The app is installed via the Arduino IDE which can be [downloaded here](https://www.arduino.cc/en/main/software). The ESP8266 boards will need to be added to the Arduino IDE which is achieved as follows:
 
-- Click File > Preferences
-- Copy and paste the URL "http://arduino.esp8266.com/stable/package_esp8266com_index.json" into the Additional Boards Manager URLs field
-- Click OK
-- Click Tools > Boards: ... > Boards Manager
-- Find and click on ESP8266 (using the Search function may make this proccess quicker)
-- Click on Install
-- After installation, click on Close
-- Select your ESP8266 board from the Tools > Board: ... menu
+- Click `File` > `Preferences`
+- Copy and paste the URL `http://arduino.esp8266.com/stable/package_esp8266com_index.json` into the `Additional Boards Manager URLs` field
+- Click `OK`
+- Click `Tools` > `Boards: ...` > `Boards Manager`
+- Find and click on `ESP8266` (using the Search function may make this proccess quicker)
+- Click on `Install`
+- After installation, click on `Close`
+- Select your `ESP8266` board from the `Tools` > `Board: ...` menu
 
 The app depends on the following libraries, which must either be downloaded from GitHub and placed in the Arduino 'libraries' folder, or installed as [described here](https://www.arduino.cc/en/Guide/Libraries) by using the Arduino library manager:
 

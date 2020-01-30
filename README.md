@@ -83,7 +83,7 @@ Remember to enter your Wi-Fi network SSID and password in the `Secrets.h` file, 
 REST Web services
 -----------------
 
-The firmware implements basic [RESTful web services](https://en.wikipedia.org/wiki/Representational_state_transfer) using the ESP8266WebServer library.  Current values are requested with `HTTP GETs`, and values are set with `HTTP POSTs` using query string parameters.
+The firmware implements basic [RESTful web services](https://en.wikipedia.org/wiki/Representational_state_transfer) using the `ESP8266WebServer` library.  Current values are requested with `HTTP GETs`, and values are set with `HTTP POSTs` using query string parameters.
 
 Infrared Remote Control
 -----------------------

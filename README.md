@@ -29,7 +29,20 @@ Features
 Web App
 --------
 
-![Web App](webapp.png)
+Main page provides access to all features related to controlling RGB LED strip parameters and features<br/>
+<img src="/images/WEBApp_Main.jpg" alt="WEB App Main window" width="650"/>
+
+Simple mode allows to control power state, change active mode or set static color of RGB LED strip<br/>
+<img src="/images/WEBApp_Simple.jpg" alt="WEB App Simple window" width="650"/>
+
+Firmware update page allows to upload precompiled firmware to ESP8266 in order to update it without connecting to PC<br/>
+<img src="/images/WEBApp_FW.jpg" alt="WEB App Firmware update window" width="650"/>
+
+Wi-Fi settings page lets you set SSID and password of your home Wi-Fi network for connecting ESP8266 with your Wi-Fi router<br/>
+<img src="/images/WEBApp_WLAN.jpg" alt="WEB App Wi-Fi window" width="650"/>
+
+Information page lists recent changes to this project and latest feature updates available to it<br/>
+<img src="/images/WEBApp_Info.jpg" alt="WEB App Information window" width="650"/>
 
 Patterns are requested by the app from the ESP8266, so as new patterns are added, they're automatically listed in the app.
 

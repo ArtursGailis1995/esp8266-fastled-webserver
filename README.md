@@ -48,13 +48,22 @@ The WEB App is a single page app that uses [jQuery](https://jquery.com) and [Boo
 
 Installing
 -----------
-The app is installed via the Arduino IDE which can be [downloaded here](https://www.arduino.cc/en/main/software). The ESP8266 boards will need to be added to the Arduino IDE which is achieved as follows. Click File > Preferences and copy and paste the URL "http://arduino.esp8266.com/stable/package_esp8266com_index.json" into the Additional Boards Manager URLs field. Click OK. Click Tools > Boards: ... > Boards Manager. Find and click on ESP8266 (using the Search function may expedite this). Click on Install. After installation, click on Close and then select your ESP8266 board from the Tools > Board: ... menu.
+The app is installed via the Arduino IDE which can be [downloaded here](https://www.arduino.cc/en/main/software). The ESP8266 boards will need to be added to the Arduino IDE which is achieved as follows:
 
-The app depends on the following libraries. They must either be downloaded from GitHub and placed in the Arduino 'libraries' folder, or installed as [described here](https://www.arduino.cc/en/Guide/Libraries) by using the Arduino library manager.
+- Click File > Preferences
+- Copy and paste the URL "http://arduino.esp8266.com/stable/package_esp8266com_index.json" into the Additional Boards Manager URLs field
+- Click OK
+- Click Tools > Boards: ... > Boards Manager
+- Find and click on ESP8266 (using the Search function may make this proccess quicker)
+- Click on Install
+- After installation, click on Close
+- Select your ESP8266 board from the Tools > Board: ... menu
 
-* [FastLED](https://github.com/FastLED/FastLED)
-* [IRremoteESP8266](https://github.com/sebastienwarin/IRremoteESP8266)
-* [Arduino WebSockets](https://github.com/Links2004/arduinoWebSockets)
+The app depends on the following libraries, which must either be downloaded from GitHub and placed in the Arduino 'libraries' folder, or installed as [described here](https://www.arduino.cc/en/Guide/Libraries) by using the Arduino library manager:
+
+- [FastLED](https://github.com/FastLED/FastLED)
+- [IRremoteESP8266](https://github.com/sebastienwarin/IRremoteESP8266)
+- [Arduino WebSockets](https://github.com/Links2004/arduinoWebSockets)
 
 Download the app code from GitHub using the green Clone or Download button from [the GitHub project main page](https://github.com/jasoncoon/esp8266-fastled-webserver) and click Download ZIP. Decompress the ZIP file in your Arduino sketch folder.
 

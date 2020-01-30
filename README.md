@@ -84,7 +84,7 @@ Set communication pin for your ESP8266 module in the sketch before uploading it.
 
     #define DATA_PIN      4    
 
-<img src="/images/GPIO_Explained.jpg" alt="GPIO of ESP8266 explained" width="650"/>
+<img src="/images/GPIO_Explained.png" alt="GPIO of ESP8266 explained" width="650"/>
 
 REST Web services
 -----------------

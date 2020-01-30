@@ -52,7 +52,7 @@ ESP8266HTTPUpdateServer httpUpdateServer;
 
 #include "FSBrowser.h"
 
-#define DATA_PIN      4
+#define DATA_PIN      D4
 #define LED_TYPE      WS2812B
 #define COLOR_ORDER   GRB
 #define NUM_LEDS      300

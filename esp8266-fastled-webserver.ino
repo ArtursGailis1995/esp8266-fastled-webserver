@@ -1031,7 +1031,8 @@ void showSolidColor()
 void rainbow()
 {
   // FastLED's built-in rainbow generator
-  fill_rainbow( leds, NUM_LEDS, gHue, 3);
+  uint8_t rainbowhue = beat8(speed);
+  fill_rainbow( leds, NUM_LEDS, rainbowhue, 3);
 }
 
 void rainbowWithGlitter()

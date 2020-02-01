@@ -216,7 +216,9 @@ function toggleSpeedSelector(pattern) {
       "Sinelon",
       "Beat",
       "Confetti",
-      "White Sparkles"
+      "White Sparkles",
+      "Rainbow",
+      "Rainbow With Glitter"
     ];
   if (speedPatterns.indexOf(pattern) > -1) {
     $('#form-group-speed').show();

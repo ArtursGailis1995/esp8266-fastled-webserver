@@ -1,8 +1,8 @@
 // based on ColorTwinkles by Mark Kriegsman: https://gist.github.com/kriegsman/5408ecd397744ba0393e
 
 #define STARTING_BRIGHTNESS 64
-#define FADE_IN_SPEED       32
-#define FADE_OUT_SPEED      20
+#define FADE_IN_SPEED       46
+#define FADE_OUT_SPEED      34
 #define DENSITY            255
 
 enum { GETTING_DARKER = 0, GETTING_BRIGHTER = 1 };

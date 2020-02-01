@@ -1,9 +1,10 @@
 // based on ColorTwinkles by Mark Kriegsman: https://gist.github.com/kriegsman/5408ecd397744ba0393e
 
 #define STARTING_BRIGHTNESS 64
-#define FADE_IN_SPEED       46
-#define FADE_OUT_SPEED      34
 #define DENSITY            255
+
+uint8_t fadeInSpeed = 46;
+uint8_t fadeOutSpeed = 34;
 
 enum { GETTING_DARKER = 0, GETTING_BRIGHTER = 1 };
 
@@ -75,7 +76,7 @@ void colortwinkles()
   {
     // Make each pixel brighter or darker, depending on
     // its 'direction' flag.
-    brightenOrDarkenEachPixel( FADE_IN_SPEED, FADE_OUT_SPEED);
+    brightenOrDarkenEachPixel( fadeInSpeed, fadeOutSpeed);
   
     // Now consider adding a new random twinkle
     if ( random8() < DENSITY ) {

@@ -169,12 +169,30 @@ function toggleCoolingSelector(pattern) {
     $('#form-group-section-fire').show();
     $('#form-group-cooling').show();
     $('#form-group-sparking').show();
-    $('#form-group-sparking').show();
   } else {
     $('#form-group-section-fire').hide();
     $('#form-group-cooling').hide();
     $('#form-group-sparking').hide();
-    $('#form-group-sparking').hide();
+  }
+}
+
+function toggleTwinkleFadeSelector(pattern) {
+  var twinkleFadePatterns =
+    [
+      "Incandescent Twinkles",
+      "Cloud Twinkles",
+      "Snow Twinkles",
+      "Rainbow Twinkles",
+    ];
+  if (twinkleFadePatterns.indexOf(pattern) > -1) {
+    $('#form-group-section-fades').show();
+    $('#form-group-fadeInSpeed').show();
+    $('#form-group-fadeOutSpeed').show();
+
+  } else {
+    $('#form-group-section-fades').hide();
+    $('#form-group-fadeInSpeed').hide();
+    $('#form-group-fadeOutSpeed').hide();
   }
 }
 
@@ -200,12 +218,12 @@ function toggleTwinkleSelector(pattern) {
       "Ocean Twinkles",
     ];
   if (twinklePatterns.indexOf(pattern) > -1) {
-    $('#form-group-twinkleSpeed').show();
     $('#form-group-section-twinkles').show();
+    $('#form-group-twinkleSpeed').show();
     $('#form-group-twinkleDensity').show();
   } else {
-    $('#form-group-twinkleSpeed').hide();
     $('#form-group-section-twinkles').hide();
+    $('#form-group-twinkleSpeed').hide();
     $('#form-group-twinkleDensity').hide();
   }
 }
@@ -260,6 +278,7 @@ function toggleGradientPalletteSelector(pattern) {
 function toggleSections(pattern) {
   toggleColorSelector(pattern);
   toggleCoolingSelector(pattern);
+  toggleTwinkleFadeSelector(pattern);
   toggleTwinkleSelector(pattern);
   toggleSpeedSelector(pattern);
   togglePalletteSelector(pattern);

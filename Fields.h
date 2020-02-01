@@ -121,6 +121,14 @@ String getTwinkleDensity() {
   return String(twinkleDensity);
 }
 
+String getFadeInSpeed() {
+  return String(fadeInSpeed);
+}
+
+String getFadeOutSpeed() {
+  return String(fadeOutSpeed);
+}
+
 FieldList fields = {
   { "power", "Power", BooleanFieldType, 0, 1, getPower },
   { "brightness", "Brightness", NumberFieldType, 1, 255, getBrightness },
@@ -139,6 +147,9 @@ FieldList fields = {
   { "twinkles", "Twinkles", SectionFieldType },
   { "twinkleSpeed", "Twinkle speed", NumberFieldType, 0, 8, getTwinkleSpeed },
   { "twinkleDensity", "Twinkle density", NumberFieldType, 0, 8, getTwinkleDensity },
+  { "fades", "Twinkle fading", SectionFieldType },
+  { "fadeInSpeed", "Twinkle fade-in speed", NumberFieldType, 16, 128, getFadeInSpeed },
+  { "fadeOutSpeed", "Twinkle fade-out speed", NumberFieldType, 16, 128, getFadeOutSpeed },
 };
 
 uint8_t fieldCount = ARRAY_SIZE(fields);

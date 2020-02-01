@@ -372,6 +372,24 @@ void setup() {
     sendInt(twinkleDensity);
   });
 
+  webServer.on("/fadeInSpeed", HTTP_POST, []() {
+    String value = webServer.arg("value");
+    fadeInSpeed = value.toInt();
+    if (fadeInSpeed < 16) fadeInSpeed = 16;
+    else if (fadeInSpeed > 128) fadeInSpeed = 128;
+    broadcastInt("fadeInSpeed", fadeInSpeed);
+    sendInt(fadeInSpeed);
+  });
+
+  webServer.on("/fadeOutSpeed", HTTP_POST, []() {
+    String value = webServer.arg("value");
+    fadeOutSpeed = value.toInt();
+    if (fadeOutSpeed < 16) fadeOutSpeed = 16;
+    else if (fadeOutSpeed > 128) fadeOutSpeed = 128;
+    broadcastInt("fadeOutSpeed", fadeOutSpeed);
+    sendInt(fadeOutSpeed);
+  });
+
   webServer.on("/solidColor", HTTP_POST, []() {
     String r = webServer.arg("r");
     String g = webServer.arg("g");

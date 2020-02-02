@@ -349,18 +349,20 @@ void setup() {
   webServer.on("/twinkleSpeed", HTTP_POST, []() {
     String value = webServer.arg("value");
     twinkleSpeed = value.toInt();
-    if (twinkleSpeed < 0) twinkleSpeed = 0;
-    else if (twinkleSpeed > 8) twinkleSpeed = 8;
+    if (twinkleSpeed < 2) twinkleSpeed = 2;
+    else if (twinkleSpeed > 7) twinkleSpeed = 7;
     broadcastInt("twinkleSpeed", twinkleSpeed);
+    setTwinkleSpeed(twinkleSpeed);
     sendInt(twinkleSpeed);
   });
 
   webServer.on("/twinkleDensity", HTTP_POST, []() {
     String value = webServer.arg("value");
     twinkleDensity = value.toInt();
-    if (twinkleDensity < 0) twinkleDensity = 0;
+    if (twinkleDensity < 1) twinkleDensity = 1;
     else if (twinkleDensity > 8) twinkleDensity = 8;
     broadcastInt("twinkleDensity", twinkleDensity);
+    setTwinkleDensity(twinkleDensity);
     sendInt(twinkleDensity);
   });
 
@@ -642,6 +644,18 @@ void loadSettings()
     fadeOutSpeed = 16;
   else if (fadeOutSpeed > 128)
     fadeOutSpeed = 128;
+
+  twinkleSpeed = EEPROM.read(12);
+  if (twinkleSpeed < 2)
+    twinkleSpeed = 2;
+  else if (twinkleSpeed > 7)
+    twinkleSpeed = 7;
+
+  twinkleDensity = EEPROM.read(13);
+  if (twinkleDensity < 1)
+    twinkleDensity = 1;
+  else if (twinkleDensity > 8)
+    twinkleDensity = 8;
 }
 
 void setPower(uint8_t value)
@@ -674,6 +688,22 @@ void setAutoplayDuration(uint8_t value)
   autoPlayTimeout = millis() + (autoplayDuration * 1000);
 
   broadcastInt("autoplayDuration", autoplayDuration);
+}
+
+void setTwinkleSpeed(uint8_t value)
+{
+  twinkleSpeed = value;
+
+  EEPROM.write(12, twinkleSpeed);
+  EEPROM.commit();
+}
+
+void setTwinkleDensity(uint8_t value)
+{
+  twinkleDensity = value;
+
+  EEPROM.write(13, twinkleDensity);
+  EEPROM.commit();
 }
 
 void setFadeInSpeed(uint8_t value)

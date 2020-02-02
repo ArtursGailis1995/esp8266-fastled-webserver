@@ -378,6 +378,7 @@ void setup() {
     if (fadeInSpeed < 16) fadeInSpeed = 16;
     else if (fadeInSpeed > 128) fadeInSpeed = 128;
     broadcastInt("fadeInSpeed", fadeInSpeed);
+    setFadeInSpeed(fadeInSpeed);
     sendInt(fadeInSpeed);
   });
 
@@ -387,6 +388,7 @@ void setup() {
     if (fadeOutSpeed < 16) fadeOutSpeed = 16;
     else if (fadeOutSpeed > 128) fadeOutSpeed = 128;
     broadcastInt("fadeOutSpeed", fadeOutSpeed);
+    setFadeOutSpeed(fadeOutSpeed);
     sendInt(fadeOutSpeed);
   });
 
@@ -595,7 +597,7 @@ void loop() {
 //      hexdump(payload, length);
 //
 //      // send message to client
-//      // webSocketsServer.sendBIN(num, payload, lenght);
+//      // webSocketsServer.sendBIN(num, payload, length);
 //      break;
 //  }
 //}
@@ -845,6 +847,18 @@ void loadSettings()
     currentGradientPaletteIndex = 0;
   else if (currentGradientPaletteIndex >= gGradientPaletteCount)
     currentGradientPaletteIndex = gGradientPaletteCount - 1;
+
+  fadeInSpeed = EEPROM.read(10);
+  if (fadeInSpeed < 16)
+    fadeInSpeed = 16;
+  else if (fadeInSpeed > 128)
+    fadeInSpeed = 128;
+
+  fadeOutSpeed = EEPROM.read(11);
+  if (fadeOutSpeed < 16)
+    fadeOutSpeed = 16;
+  else if (fadeOutSpeed > 128)
+    fadeOutSpeed = 128;
 }
 
 void setPower(uint8_t value)
@@ -877,6 +891,22 @@ void setAutoplayDuration(uint8_t value)
   autoPlayTimeout = millis() + (autoplayDuration * 1000);
 
   broadcastInt("autoplayDuration", autoplayDuration);
+}
+
+void setFadeInSpeed(uint8_t value)
+{
+  fadeInSpeed = value;
+
+  EEPROM.write(10, fadeInSpeed);
+  EEPROM.commit();
+}
+
+void setFadeOutSpeed(uint8_t value)
+{
+  fadeOutSpeed = value;
+
+  EEPROM.write(11, fadeOutSpeed);
+  EEPROM.commit();
 }
 
 void setSolidColor(CRGB color)

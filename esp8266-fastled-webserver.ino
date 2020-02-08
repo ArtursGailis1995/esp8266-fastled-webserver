@@ -714,7 +714,7 @@ void loadSettings() {
     twinkleSpeed = 2;
   }
   else if (twinkleSpeed > 7) {
-    twinkleSpeed = 5; //Set 'Twinkles' speed to 5 if out of bounds
+    twinkleSpeed = 4; //Set 'Twinkles' speed to 4 if out of bounds
   }
 
   twinkleDensity = EEPROM.read(13);
@@ -722,7 +722,7 @@ void loadSettings() {
     twinkleDensity = 1;
   }
   else if (twinkleDensity > 8) {
-    twinkleDensity = 6; //Set 'Twinkles' density to 6 if out of bounds
+    twinkleDensity = 5; //Set 'Twinkles' density to 5 if out of bounds
   }
 }
 

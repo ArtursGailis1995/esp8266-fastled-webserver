@@ -138,7 +138,7 @@ FieldList fields = {
   { "speed", "Speed", NumberFieldType, 1, 255, getSpeed },
   { "autoplay", "Autoplay", SectionFieldType },
   { "autoplay", "Autoplay", BooleanFieldType, 0, 1, getAutoplay },
-  { "autoplayDuration", "Autoplay duration", NumberFieldType, 0, 255, getAutoplayDuration },
+  { "autoplayDuration", "Autoplay duration", NumberFieldType, 10, 250, getAutoplayDuration },
   { "solidColor", "Solid color", SectionFieldType },
   { "solidColor", "Color", ColorFieldType, 0, 255, getSolidColor },
   { "fire", "Fire & Water", SectionFieldType },

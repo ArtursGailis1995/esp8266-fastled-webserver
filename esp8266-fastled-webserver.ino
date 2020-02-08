@@ -73,7 +73,7 @@ const uint8_t brightnessCount = 5;
 uint8_t brightnessMap[brightnessCount] = { 16, 32, 64, 128, 255 };
 uint8_t brightnessIndex = 0;
 uint8_t secondsPerPalette = 10;
-uint8_t cooling = 49;
+uint8_t cooling = 50;
 uint8_t sparking = 60;
 uint8_t speed = 30;
 extern const TProgmemRGBGradientPalettePtr gGradientPalettes[];
@@ -645,7 +645,8 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
 /////////////////////// READ SETTINGS FROM EEPROM ////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-// Read settings (previous values) saved to EEPROM
+// Read settings (previous values) saved to EEPROM. If some values go out of bounds, they will be reset on startup.
+// Reasons for reset can be no values set (after reflash) or invalid values set (via REST API)
 void loadSettings() {
   brightness = EEPROM.read(0);
 
@@ -654,7 +655,7 @@ void loadSettings() {
     currentPatternIndex = 0;
   }
   else if (currentPatternIndex >= patternCount) {
-    currentPatternIndex = patternCount - 1;
+    currentPatternIndex = 0; //Load 'Pride' effect if out of bounds
   }
   
   byte r = EEPROM.read(2);
@@ -667,14 +668,21 @@ void loadSettings() {
 
   power = EEPROM.read(5);
   autoplay = EEPROM.read(6);
+
   autoplayDuration = EEPROM.read(7);
+  if (autoplayDuration < 10) {
+    autoplayDuration = 10;
+  }
+  else if (autoplayDuration > 250) {
+    autoplayDuration = 120; //Load default autoplay duration as 120 (2 minutes) if out of bounds
+  }
 
   currentPaletteIndex = EEPROM.read(8);
   if (currentPaletteIndex < 0) {
     currentPaletteIndex = 0;
   }
   else if (currentPaletteIndex >= paletteCount) {
-    currentPaletteIndex = paletteCount - 1;
+    currentPaletteIndex = 0; //Load 'Rainbow' palette if out of bounds
   }
 
   currentGradientPaletteIndex = EEPROM.read(9);
@@ -682,7 +690,7 @@ void loadSettings() {
     currentGradientPaletteIndex = 0;
   }
   else if (currentGradientPaletteIndex >= gGradientPaletteCount) {
-    currentGradientPaletteIndex = gGradientPaletteCount - 1;
+    currentGradientPaletteIndex = 0; //Load 'Sunset' gradient if out of bounds
   }
 
   fadeInSpeed = EEPROM.read(10);
@@ -690,7 +698,7 @@ void loadSettings() {
     fadeInSpeed = 16;
   }
   else if (fadeInSpeed > 128) {
-    fadeInSpeed = 128;
+    fadeInSpeed = 75; //Set 'Twinkles' fade-in speed to 75 if out of bounds
   }
   
   fadeOutSpeed = EEPROM.read(11);
@@ -698,7 +706,7 @@ void loadSettings() {
     fadeOutSpeed = 16;
   }
   else if (fadeOutSpeed > 128) {
-    fadeOutSpeed = 128;
+    fadeOutSpeed = 65; //Set 'Twinkles' fade-out speed to 65 if out of bounds
   }
 
   twinkleSpeed = EEPROM.read(12);
@@ -706,7 +714,7 @@ void loadSettings() {
     twinkleSpeed = 2;
   }
   else if (twinkleSpeed > 7) {
-    twinkleSpeed = 7;
+    twinkleSpeed = 5; //Set 'Twinkles' speed to 5 if out of bounds
   }
 
   twinkleDensity = EEPROM.read(13);
@@ -714,7 +722,7 @@ void loadSettings() {
     twinkleDensity = 1;
   }
   else if (twinkleDensity > 8) {
-    twinkleDensity = 8;
+    twinkleDensity = 6; //Set 'Twinkles' density to 6 if out of bounds
   }
 }
 

@@ -19,23 +19,9 @@
 uint8_t power = 1;
 uint8_t brightness = brightnessMap[brightnessIndex];
 
-//String setPower(String value) {
-//  power = value.toInt();
-//  if(power < 0) power = 0;
-//  else if (power > 1) power = 1;
-//  return String(power);
-//}
-
 String getPower() {
   return String(power);
 }
-
-//String setBrightness(String value) {
-//  brightness = value.toInt();
-//  if(brightness < 0) brightness = 0;
-//  else if (brightness > 255) brightness = 255;
-//  return String(brightness);
-//}
 
 String getBrightness() {
   return String(brightness);
@@ -50,8 +36,10 @@ String getPatterns() {
 
   for (uint8_t i = 0; i < patternCount; i++) {
     json += "\"" + patterns[i].name + "\"";
-    if (i < patternCount - 1)
+
+    if (i < patternCount - 1) {
       json += ",";
+    }
   }
 
   return json;
@@ -66,8 +54,10 @@ String getPalettes() {
 
   for (uint8_t i = 0; i < paletteCount; i++) {
     json += "\"" + paletteNames[i] + "\"";
-    if (i < paletteCount - 1)
+
+    if (i < paletteCount - 1) {
       json += ",";
+    }
   }
 
   return json;
@@ -82,8 +72,10 @@ String getGradientPalettes() {
 
   for (uint8_t i = 0; i < gGradientPaletteCount; i++) {
     json += "\"" + gradientPaletteNames[i] + "\"";
-    if (i < gGradientPaletteCount - 1)
+
+    if (i < gGradientPaletteCount - 1) {
       json += ",";
+    }
   }
 
   return json;

@@ -611,11 +611,11 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
     break;
 
     case WStype_CONNECTED: {
-        IPAddress ip = webSocketsServer.remoteIP(num);
-        Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+      IPAddress ip = webSocketsServer.remoteIP(num);
+      Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
 
         // Send message to client
-        webSocketsServer.sendTXT(num, "Connected");
+      webSocketsServer.sendTXT(num, "Connected");
     }
     break;
 
@@ -1026,8 +1026,8 @@ void juggle() {
 
   if (lastSecond != secondHand) { // Debounce to make sure we're not repeating an assignment.
     lastSecond = secondHand;
-    
-    switch (secondHand) {
+  
+  switch (secondHand) {
       case  0: numdots = 1; basebeat = 20; hueinc = 16; faderate = 2; thishue = 0; break; // You can change values here, one at a time , or altogether.
       case 10: numdots = 4; basebeat = 10; hueinc = 16; faderate = 8; thishue = 128; break;
       case 20: numdots = 8; basebeat =  3; hueinc =  0; faderate = 8; thishue = random8(); break; // Only gets called once, and not continuously for the next several seconds. Therefore, no rainbows.

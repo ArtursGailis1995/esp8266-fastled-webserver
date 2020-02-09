@@ -48,17 +48,26 @@
         <div class="panel panel-danger">
             <div class="panel-heading">ESP8266 firmware update</div>
             <div class="panel-body">
-                <div class="well">
-                    <span>The firmware must be updated by providing compiled <code>*.bin</code> file. When you click "Verify" button in Arduino IDE, <code>*.bin</code> file is compiled and stored in a <code>%TEMP%</code> folder, in folder starting with <code>arduino_</code>. You can use Win+R key combination and type in <code>%TEMP%</code> to quickly access temporary files location on your system.</span><br /><br />
-                    <span>ESP8266 must be power-cycled at least once after update before it can be updated again (disconnected from power source not restarted)!</span><br /><br />
-                    <span><b>To prevent losing SPIFFS contents, make sure <code>Tools</code> > <code>Erase Flash</code> > <code>Only Sketch</code> is selected in Arduino IDE!</b></span>
-                </div>
-                <div class="well">
-                    <form method='POST' action='/update' enctype='multipart/form-data'>
-                        <input type='file' name='update'><br />
-                        <input type='submit' value='Update' class="btn-danger">
-                    </form>
-                </div>
+				<div class="well">
+					<span>The firmware must be updated by providing compiled <code>*.bin</code> file. When you click "Verify" button in Arduino IDE, <code>*.bin</code> file is compiled and stored in a <code>%TEMP%</code> folder, in folder starting with <code>arduino_build_</code>. You can use Win+R key combination and type in <code>%TEMP%</code> to quickly access temporary files location on your Windows computer.</span><br /><br />
+					<span>The file system (SPIFFS) can be updated. To update it, click <code>Tools</code> > <code>ESP8266 Sketch Data Upload</code> in Arduino IDE. It will compile <code>*.spiffs.bin</code> file and place it in the same folder as <code>*.bin</code> firmware file. If it fails, make sure that <code>ESP8266FS</code> tool is installed and working, or update manually via USB.</span><br /><br />
+					<span>ESP8266 must be power-cycled at least once after update before it can be updated again (disconnected from power source not restarted)!</span><br /><br />
+					<span><b>To prevent losing SPIFFS contents after each update, make sure <code>Tools</code> > <code>Erase Flash</code> > <code>Only Sketch</code> is selected in Arduino IDE before compiling!</b></span>
+				</div>
+				<div class="well">
+					<form method='POST' action='/update' enctype='multipart/form-data'>
+						Firmware:
+						<input type='file' accept='.bin' name='firmware'><br />
+						<input type='submit' value='Update Firmware' class="btn-danger">
+					</form>
+				</div>
+				<div class="well">
+					<form method='POST' action='/update' enctype='multipart/form-data'>
+						File System (SPIFFS):
+						<input type='file' accept='.bin' name='filesystem'><br />
+						<input type='submit' value='Update File System' class="btn-danger">
+					</form>
+				</div>
             </div>
         </div>
     </div>

@@ -845,6 +845,13 @@ void setAutoplay(uint8_t value) {
 
 // Set autoplay duration, write to EEPROM
 void setAutoplayDuration(uint8_t value) {
+  if (value > 250) {
+    value = 250;
+  }
+  else if (value < 3) {
+    value = 3;
+  }
+
   autoplayDuration = value;
 
   EEPROM.write(7, autoplayDuration);

@@ -45,12 +45,24 @@
     </nav>
 
     <div id="container" class="container">
-        <div class="panel panel-default">
-            <div class="panel-heading">Power options</div>
-            <div class="panel-body">
-                <div style="margin: 5px;">
-                    <button type="button" class="btn btn-default" id="btnOn">On</button>
-                    <button type="button" class="btn btn-default" id="btnOff">Off</button>
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Power options</div>
+                    <div class="panel-body">
+                        <div style="margin: 8px;">
+                            <button type="button" class="btn btn-default" id="btnOn">On</button>
+                            <button type="button" class="btn btn-default" id="btnOff">Off</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-9">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Brightness control</div>
+                    <div class="panel-body" style="height: auto;">
+                        <div id="brigthnessSliderRow" class="grid-pattern-brightness"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -74,6 +86,14 @@
     <div id="templates" style="display: none">
         <div id="colorButtonTemplate" class="grid-item-color"></div>
         <button id="patternButtonTemplate" class="grid-item-pattern btn btn-default"></button>
+        <div id="numberTemplate" class="form-group">
+            <div class="col-sm-2">
+                <input class="form-control input" type="number" step="1" min="0" max="255" />
+            </div>
+            <div class="col-sm-10">
+                <input class="form-control slider" type="range" step="1" min="0" max="255" />
+            </div>
+        </div>
     </div>
 
     <!-- request js from the ESP8266 web server -->

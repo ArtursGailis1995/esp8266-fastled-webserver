@@ -16,3 +16,7 @@
   white-space: normal;
   cursor: pointer;
 }
+
+.grid-pattern-brightness {
+  height: auto !important;
+}

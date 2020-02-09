@@ -79,6 +79,10 @@ ws.onmessage = function(evt) {
         $(".grid-item-pattern").attr("class", "grid-item-pattern btn btn-default");
         $("#pattern-button-" + data.value).attr("class", "grid-item-pattern btn btn-primary");
         break;
+
+      case "brightness":
+        $(".form-control").val(data.value);
+        break;
     }
   }
 }
@@ -102,6 +106,10 @@ $(document).ready(function() {
         case "pattern":
           addPatternButtons(field);
           break;
+
+        case "brightness":
+          addNumberField(field);
+          break;
       }
     });
   });
@@ -122,6 +130,55 @@ $(document).ready(function() {
 
   $("#status").html("Ready");
 });
+
+function addNumberField(field) {
+  var template = $("#numberTemplate").clone();
+
+  template.attr("id", "form-group-" + field.name);
+  template.attr("data-field-type", field.type);
+
+  var label = template.find(".control-label");
+  label.attr("for", "input-" + field.name);
+  label.text(field.label);
+
+  var input = template.find(".input");
+  var slider = template.find(".slider");
+  slider.attr("id", "input-" + field.name);
+  if (field.min) {
+    input.attr("min", field.min);
+    slider.attr("min", field.min);
+  }
+  if (field.max) {
+    input.attr("max", field.max);
+    slider.attr("max", field.max);
+  }
+  if (field.step) {
+    input.attr("step", field.step);
+    slider.attr("step", field.step);
+  }
+  input.val(field.value);
+  slider.val(field.value);
+
+  slider.on("change mousemove", function () {
+    input.val($(this).val());
+  });
+
+  slider.on("change", function () {
+    var value = $(this).val();
+    input.val(value);
+    field.value = value;
+    delayPostValue(field.name, value);
+  });
+
+  input.on("change", function () {
+    var value = $(this).val();
+    slider.val(value);
+    field.value = value;
+    delayPostValue(field.name, value);
+  });
+
+  $("#brigthnessSliderRow").append(template);
+}
 
 function addColorButtons() {
   var hues = 25;

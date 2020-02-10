@@ -473,6 +473,11 @@ void setup() {
     sendInt(autoplayDuration);
   });
 
+  webServer.on("/wifi", HTTP_GET, []() {
+    String wjson = getWiFiJson();
+    webServer.send(200, "application/json", wjson);
+  });
+
   // List directory contents
   webServer.on("/list", HTTP_GET, handleFileList);
   
@@ -640,6 +645,31 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
     break;
   }
 }
+
+///////////////////////////////////////////////////////////////////////
+/////////////////////// WIFI STATUS MONITORING ////////////////////////
+///////////////////////////////////////////////////////////////////////
+
+String getWiFiJson() {
+  String json = "{";
+  json += "\"status\":\"" + String(WiFi.status()) + "\"";
+  json += ",\"ssid\":\"" + WiFi.SSID() + "\"";
+  json += ",\"password\":\"" + String(WiFi.psk()) + "\"";
+  json += ",\"channel\":\"" + String(WiFi.channel()) + "\"";
+  json += ",\"rssi\":\"" + String(WiFi.RSSI()) + "\"";
+  json += ",\"bssid\":\"" + WiFi.BSSIDstr() + "\"";
+  json += ",\"mac\":\"" + String(WiFi.macAddress()) + "\"";
+  json += ",\"localIP\":\"" + WiFi.localIP().toString() + "\"";
+  json += ",\"netmask\":\"" + WiFi.subnetMask().toString() + "\"";
+  json += ",\"gateway\":\"" + WiFi.gatewayIP().toString() + "\"";
+  json += ",\"hostname\":\"" + String(WiFi.hostname()) + "\"";
+  json += ",\"dns1\":\"" + WiFi.dnsIP(0).toString() + "\"";
+  json += ",\"dns2\":\"" + WiFi.dnsIP(1).toString() + "\"";
+  json += ",\"softAPIP\":\"" + WiFi.softAPIP().toString() + "\"";
+  json += "}";
+
+  return json;
+} 
 
 //////////////////////////////////////////////////////////////////////////
 /////////////////////// READ SETTINGS FROM EEPROM ////////////////////////

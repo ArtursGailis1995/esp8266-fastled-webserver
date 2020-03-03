@@ -498,6 +498,23 @@ DEFINE_GRADIENT_PALETTE( Blue_Cyan_Yellow_gp ) {
   255, 255,255,  0
 };
 
+DEFINE_GRADIENT_PALETTE( Sakura_gp ) {
+    0, 196, 19, 10,
+   65, 255, 69, 45,
+  130, 223, 45, 72,
+  195, 255, 82,103,
+  255, 223, 13, 17
+};
+
+DEFINE_GRADIENT_PALETTE( Aurora_gp ) {
+    0,   1,  5, 45,
+   64,   0,200, 23,
+  128,   0,255,  0,
+  170,   0,243, 45,
+  200,   0,135,  7,
+  255,   1,  5, 45
+};
+
 
 // Single array of defined cpt-city color palettes.
 // This will let us programmatically choose one based on
@@ -542,7 +559,9 @@ const TProgmemRGBGradientPalettePtr gGradientPalettes[] = {
   BlacK_Blue_Magenta_White_gp,
   BlacK_Magenta_Red_gp,
   BlacK_Red_Magenta_Yellow_gp,
-  Blue_Cyan_Yellow_gp 
+  Blue_Cyan_Yellow_gp,
+  Sakura_gp,
+  Aurora_gp 
 };
 
 // Count of how many cpt-city gradients are defined:
@@ -582,4 +601,6 @@ const String gradientPaletteNames[gGradientPaletteCount] = {
   "Black, magenta, red",
   "Black, red, magenta, yellow",
   "Blue, cyan, yellow",
+  "Sakura",
+  "Aurora",
 };

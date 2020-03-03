@@ -156,6 +156,7 @@ PatternAndNameList patterns = {
   { fire,                   "Fire" },
   { water,                  "Water" },
   { pacifica_loop,          "Pacifica Loop" },
+  { night_lake,             "Midnight Lake" },
 
   { showSolidColor,         "Solid Color" }
 };
@@ -1355,6 +1356,28 @@ void pacifica_deepen_colors() {
     leds[i].blue = scale8( leds[i].blue,  145);
     leds[i].green = scale8( leds[i].green, 200);
     leds[i] |= CRGB( 2, 5, 7);
+  }
+}
+
+// Calm effect, like a lake at night, uses color palettes
+void night_lake() {
+  uint8_t effectSpeed = 15;
+  int wave1 = beatsin8(effectSpeed + 2, -64, 64);
+  int wave2 = beatsin8(effectSpeed + 1, -64, 64);
+  uint8_t wave3 = beatsin8(effectSpeed + 2, 0, 80);
+  uint8_t lum = 0;
+
+  for (uint16_t i = 0; i < NUM_LEDS; i++) {
+    int index = cos8((i * 15) + wave1) / 2 + cubicwave8((i * 23) + wave2) / 2;
+    
+    if(index > wave3) {
+      lum = index - wave3;
+    }
+    else {
+      lum = 0;
+    }
+
+    leds[i] = ColorFromPalette(palettes[currentPaletteIndex], map(index, 0, 255, 0, 240), lum, LINEARBLEND);
   }
 }
 

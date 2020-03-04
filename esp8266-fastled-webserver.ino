@@ -88,6 +88,7 @@ uint8_t autoplayDuration = 10;
 unsigned long autoPlayTimeout = 0;
 uint8_t currentPaletteIndex = 0;
 uint8_t gHue = 0;
+int meteorCounter = 0;
 CRGB solidColor = CRGB::Blue;
 // Enable or disable AP mode
 const bool apMode = false;
@@ -157,6 +158,8 @@ PatternAndNameList patterns = {
   { water,                  "Water" },
   { pacifica_loop,          "Pacifica Loop" },
   { night_lake,             "Midnight Lake" },
+  { whiteMeteor,			"Meteor Rain" },
+  { colorfulMeteor,         "Colorful Meteor Rain" },
 
   { showSolidColor,         "Solid Color" }
 };
@@ -1378,6 +1381,56 @@ void night_lake() {
     }
 
     leds[i] = ColorFromPalette(palettes[currentPaletteIndex], map(index, 0, 255, 0, 240), lum, LINEARBLEND);
+  }
+}
+
+// Used by meteorRain
+void colorfulMeteor() {
+  meteorRain(true);
+}
+
+// Used by meteorRain
+void whiteMeteor() {
+  meteorRain(false);
+}
+
+// Falling meteor effect with decaying tail - must reduce size and trail for short strips
+void meteorRain(bool useColorPalettes) {
+  // Meteor size in pixels, without tail
+  uint8_t meteorSize = 32;
+  // Meteor tail decay, lower value means longer tail (slower decay)
+  uint8_t meteorTrailDecay = 48;
+  // Tail decays randomly, like a real meteor is not perfect and leaves some glowing dust behind
+  bool meteorRandomDecay = true;
+  // Default meteor color definitions (0-255)
+  uint8_t redComponent = 255;
+  uint8_t greenComponent = 255;
+  uint8_t blueComponent = 255;
+
+  if (meteorCounter < NUM_LEDS) { // Can replace 'NUM_LEDS' with 'NUM_LEDS + NUM_LEDS' in this IF statement if LED strip is very short
+    // Add decay
+    for (int j = 0; j < NUM_LEDS; j++) {
+      if ( (!meteorRandomDecay) || (random(10) > 5) ) {
+        leds[j].fadeToBlackBy(meteorTrailDecay);
+      }
+    }
+
+    // Draw meteor
+    for (int j = 0; j < meteorSize; j++) {
+      if ( ( meteorCounter - j < NUM_LEDS) && (meteorCounter - j >= 0) ) {
+        if (!useColorPalettes) {
+          leds[meteorCounter - j] = CRGB(redComponent, greenComponent, blueComponent);
+        }
+        else {
+          leds[meteorCounter - j] += ColorFromPalette(palettes[currentPaletteIndex], gHue + random8(64), 255, LINEARBLEND);
+        }
+      }
+    }
+    meteorCounter++;
+  }
+  else {
+    meteorCounter = 0;
+    return;
   }
 }
 

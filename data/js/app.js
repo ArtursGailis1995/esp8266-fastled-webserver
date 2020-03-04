@@ -252,7 +252,8 @@ function togglePalletteSelector(pattern) {
       "Confetti",
       "Sinelon",
       "Beat",
-      "Midnight Lake"
+      "Midnight Lake",
+      "Colorful Meteor Rain"
     ];
   if (pallettePatterns.indexOf(pattern) > -1) {
     $('#form-group-palette').show();

@@ -251,7 +251,8 @@ function togglePalletteSelector(pattern) {
     [
       "Confetti",
       "Sinelon",
-      "Beat"
+      "Beat",
+      "Midnight Lake"
     ];
   if (pallettePatterns.indexOf(pattern) > -1) {
     $('#form-group-palette').show();

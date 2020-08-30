@@ -44,6 +44,10 @@ $(document).ready(function() {
           addColorFieldPicker(field);
         } else if (field.type == "Section") {
           addSectionField(field);
+        } else if (field.type == "String") {
+        addStringField(field, false);
+        } else if (field.type == "Label") {
+        addStringField(field, true);
         }
       });
 
@@ -530,6 +534,36 @@ function addSectionField(field) {
 
   template.attr("id", "form-group-section-" + field.name);
   template.attr("data-field-type", field.type);
+
+  $("#form").append(template);
+}
+
+function addStringField(field, readonly) {
+  var template;
+
+  if (readonly) {
+    template = $("#labelTemplate").clone();
+  } else {
+    template = $("#stringTemplate").clone();
+  }
+
+  template.attr("id", "form-group-" + field.name);
+  template.attr("data-field-type", field.type);
+
+  var label = template.find(".control-label");
+  label.attr("for", "input-" + field.name);
+  label.text(field.label);
+
+  var input = template.find(".input");
+  input.val(field.value);
+
+  if (!readonly) {
+    input.on("change", function() {
+      var value = $(this).val();
+      field.value = value;
+      delayPostValue(field.name, value);
+    });
+  }
 
   $("#form").append(template);
 }

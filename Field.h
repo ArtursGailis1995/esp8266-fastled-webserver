@@ -24,8 +24,10 @@ const String BooleanFieldType = "Boolean";
 const String SelectFieldType = "Select";
 const String ColorFieldType = "Color";
 const String SectionFieldType = "Section";
+const String StringFieldType = "String";
+const String LabelFieldType = "Label";
 
-typedef struct Field {
+struct Field {
 	String name;
 	String label;
 	String type;
@@ -78,7 +80,7 @@ String getFieldsJson(FieldList fields, uint8_t count) {
 		json += "{\"name\":\"" + field.name + "\",\"label\":\"" + field.label + "\",\"type\":\"" + field.type + "\"";
 
 		if(field.getValue) {
-			if (field.type == ColorFieldType || field.type == "String") {
+			if (field.type == ColorFieldType || field.type == StringFieldType || field.type == LabelFieldType) {
 				json += ",\"value\":\"" + field.getValue() + "\"";
 			}
 			else {

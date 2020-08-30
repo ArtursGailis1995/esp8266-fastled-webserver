@@ -28,14 +28,17 @@ extern "C" {
 }
 
 #include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPUpdateServer.h>
+#include <WiFiManager.h>
 #include <WebSocketsServer.h>
 #include <FS.h>
 #include <EEPROM.h>
 
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
+WiFiManager wifiManager;
 ESP8266WebServer webServer(80);
 ESP8266HTTPUpdateServer httpUpdateServer;
 
@@ -45,13 +48,6 @@ WebSocketsServer webSocketsServer = WebSocketsServer(81);
 #include "GradientPalettes.h"
 #include "Field.h"
 #include "FSBrowser.h"
-#include "Secrets.h" // This file is intentionally not included in the sketch, so nobody accidentally commits their secret information.
-// Create a Secrets.h file with the following:
-// AP mode password
-// const char WiFiAPPSK[] = "your-password";
-// Wi-Fi network to connect to (if not in AP mode)
-// char* ssid = "your-ssid";
-// char* password = "your-password";
 
 // LED STRIP PARAMETERS
 #define DATA_PIN      D4
@@ -90,8 +86,7 @@ uint8_t currentPaletteIndex = 0;
 uint8_t gHue = 0;
 int meteorCounter = 0;
 CRGB solidColor = CRGB::Blue;
-// Enable or disable AP mode
-const bool apMode = false;
+String nameString;
 
 /////////////////////////////////////////////
 //////////// PATTERN DEFINITIONS ////////////
@@ -213,11 +208,11 @@ const String paletteNames[paletteCount] = {
 //////////////////////////////////////////////////////////////////
 
 void setup() {
+  WiFi.mode(WIFI_STA);
   // Do not allow Wi-Fi module to sleep
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
 
   Serial.begin(115200);
-  delay(100);
   Serial.setDebugOutput(false);
 
   FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS); // for WS2812 (Neopixel)
@@ -267,37 +262,35 @@ void setup() {
     Serial.printf("\n");
   }
 
-  // Attempt Wi-Fi connection
-  if (apMode) {
-    WiFi.mode(WIFI_AP);
+  // Do a little work to get a unique-ish name. Get the last two bytes of the MAC (HEX'd)
+  uint8_t mac[WL_MAC_ADDR_LENGTH];
+  WiFi.softAPmacAddress(mac);
+  String macID = String(mac[WL_MAC_ADDR_LENGTH - 2], HEX) + String(mac[WL_MAC_ADDR_LENGTH - 1], HEX);
+  macID.toUpperCase();
 
-    // Do a little work to get a unique-ish name. Append the last two bytes of the MAC (HEX'd) to "ESP8266-":
-    uint8_t mac[WL_MAC_ADDR_LENGTH];
-    WiFi.softAPmacAddress(mac);
-    String macID = String(mac[WL_MAC_ADDR_LENGTH - 2], HEX) + String(mac[WL_MAC_ADDR_LENGTH - 1], HEX);
-    macID.toUpperCase();
-    String AP_NameString = "ESP8266-" + macID;
+  nameString = "ESP8266-" + macID;
 
-    char AP_NameChar[AP_NameString.length() + 1];
-    memset(AP_NameChar, 0, AP_NameString.length() + 1);
+  char nameChar[nameString.length() + 1];
+  memset(nameChar, 0, nameString.length() + 1);
 
-    for (int i = 0; i < AP_NameString.length(); i++) {
-      AP_NameChar[i] = AP_NameString.charAt(i);
-    }
+  for (int i = 0; i < nameString.length(); i++) {
+    nameChar[i] = nameString.charAt(i);
+  }
 
-    // Launch hotspot
-    WiFi.softAP(AP_NameChar, WiFiAPPSK);
+  Serial.printf("Name: %s\n", nameChar );
 
-    Serial.printf("Connect to Wi-Fi access point: %s\n", AP_NameChar);
-    Serial.println("and open http://192.168.4.1 in your browser");
+  // Uncomment to wipe WiFi credentials for testing purpose
+  // wifiManager.resetSettings();
+
+  wifiManager.setConfigPortalBlocking(false);
+
+  // Automatically connect to WiFi using saved credentials if they exist
+  // If connection fails then start an access point with the specified name
+  if(wifiManager.autoConnect(nameChar)) {
+    Serial.println("Wi-Fi connected");
   }
   else {
-    WiFi.mode(WIFI_STA);
-    Serial.printf("Connecting to %s\n", ssid);
-    
-    if (String(WiFi.SSID()) != String(ssid)) {
-      WiFi.begin(ssid, password);
-    }
+    Serial.println("Wi-Fi manager portal running");
   }
 
   ////////////////////////////////////////////////////////////////////
@@ -308,12 +301,14 @@ void setup() {
 
   webServer.on("/all", HTTP_GET, []() {
     String json = getFieldsJson(fields, fieldCount);
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     webServer.send(200, "text/json", json);
   });
 
   webServer.on("/fieldValue", HTTP_GET, []() {
     String name = webServer.arg("name");
     String value = getFieldValue(name, fields, fieldCount);
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     webServer.send(200, "text/json", value);
   });
 
@@ -321,12 +316,14 @@ void setup() {
     String name = webServer.arg("name");
     String value = webServer.arg("value");
     String newValue = setFieldValue(name, value, fields, fieldCount);
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     webServer.send(200, "text/json", newValue);
   });
 
   webServer.on("/power", HTTP_POST, []() {
     String value = webServer.arg("value");
     setPower(value.toInt());
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(power);
   });
 
@@ -334,6 +331,7 @@ void setup() {
     String value = webServer.arg("value");
     cooling = value.toInt();
     broadcastInt("cooling", cooling);
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(cooling);
   });
 
@@ -341,6 +339,7 @@ void setup() {
     String value = webServer.arg("value");
     sparking = value.toInt();
     broadcastInt("sparking", sparking);
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(sparking);
   });
 
@@ -348,6 +347,7 @@ void setup() {
     String value = webServer.arg("value");
     speed = value.toInt();
     broadcastInt("speed", speed);
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(speed);
   });
 
@@ -364,6 +364,7 @@ void setup() {
     
     broadcastInt("twinkleSpeed", twinkleSpeed);
     setTwinkleSpeed(twinkleSpeed);
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(twinkleSpeed);
   });
 
@@ -380,6 +381,7 @@ void setup() {
     
     broadcastInt("twinkleDensity", twinkleDensity);
     setTwinkleDensity(twinkleDensity);
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(twinkleDensity);
   });
 
@@ -396,6 +398,7 @@ void setup() {
     
     broadcastInt("fadeInSpeed", fadeInSpeed);
     setFadeInSpeed(fadeInSpeed);
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(fadeInSpeed);
   });
 
@@ -412,6 +415,7 @@ void setup() {
     
     broadcastInt("fadeOutSpeed", fadeOutSpeed);
     setFadeOutSpeed(fadeOutSpeed);
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(fadeOutSpeed);
   });
 
@@ -420,65 +424,76 @@ void setup() {
     String g = webServer.arg("g");
     String b = webServer.arg("b");
     setSolidColor(r.toInt(), g.toInt(), b.toInt());
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendString(String(solidColor.r) + "," + String(solidColor.g) + "," + String(solidColor.b));
   });
 
   webServer.on("/pattern", HTTP_POST, []() {
     String value = webServer.arg("value");
     setPattern(value.toInt());
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(currentPatternIndex);
   });
 
   webServer.on("/patternName", HTTP_POST, []() {
     String value = webServer.arg("value");
     setPatternName(value);
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(currentPatternIndex);
   });
 
   webServer.on("/palette", HTTP_POST, []() {
     String value = webServer.arg("value");
     setPalette(value.toInt());
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(currentPaletteIndex);
   });
 
   webServer.on("/paletteName", HTTP_POST, []() {
     String value = webServer.arg("value");
     setPaletteName(value);
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(currentPaletteIndex);
   });
 
   webServer.on("/gradientPalette", HTTP_POST, []() {
     String value = webServer.arg("value");
     setGradientPalette(value.toInt());
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(currentGradientPaletteIndex);
   });
 
   webServer.on("/gradientPaletteName", HTTP_POST, []() {
     String value = webServer.arg("value");
     setGradientPaletteName(value);
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(currentGradientPaletteIndex);
   });
 
   webServer.on("/brightness", HTTP_POST, []() {
     String value = webServer.arg("value");
     setBrightness(value.toInt());
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(brightness);
   });
 
   webServer.on("/autoplay", HTTP_POST, []() {
     String value = webServer.arg("value");
     setAutoplay(value.toInt());
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(autoplay);
   });
 
   webServer.on("/autoplayDuration", HTTP_POST, []() {
     String value = webServer.arg("value");
     setAutoplayDuration(value.toInt());
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(autoplayDuration);
   });
 
   webServer.on("/wifi", HTTP_GET, []() {
     String wjson = getWiFiJson();
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     webServer.send(200, "application/json", wjson);
   });
 
@@ -488,6 +503,7 @@ void setup() {
   // Load SPIFFS editor
   webServer.on("/edit", HTTP_GET, []() {
     if (!handleFileRead("/edit.htm")) {
+      webServer.sendHeader("Access-Control-Allow-Origin", "*");
       webServer.send(404, "text/plain", "FileNotFound");
     }
   });
@@ -500,10 +516,15 @@ void setup() {
 
   // Handle uploads in editor
   webServer.on("/edit", HTTP_POST, []() {
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     webServer.send(200, "text/plain", "");
   }, handleFileUpload);
 
   webServer.serveStatic("/", SPIFFS, "/", "max-age=86400");
+
+  // Start mDNS
+  MDNS.begin(nameChar);
+  MDNS.setHostname(nameChar);
 
   // Start HTTP web server
   webServer.begin();
@@ -555,8 +576,10 @@ void loop() {
 
   // Comment out to disable WS
   webSocketsServer.loop();
-  
+
+  wifiManager.process();
   webServer.handleClient();
+  MDNS.update();
 
   // Set color to black if power is turned off
   if (power == 0) {
@@ -572,9 +595,15 @@ void loop() {
     }
     else if (!hasConnected) {
       hasConnected = true;
+      MDNS.begin(nameString);
+      MDNS.setHostname(nameString);
+      webServer.begin();
+      Serial.println("HTTP web server started");
       Serial.print("Connected! Open http://");
       Serial.print(WiFi.localIP());
-      Serial.println(" in your browser");
+      Serial.print(" or http://");
+      Serial.print(nameString);
+      Serial.println(".local in your browser");
     }
   }
 

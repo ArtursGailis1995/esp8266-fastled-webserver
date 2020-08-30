@@ -5,11 +5,36 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>LED controller</title>
+    <title>Information - LED controller</title>
     <!-- request CSS from the ESP8266 web server -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" href="images/rgb.png">
+    <script type="text/javascript">
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var wlanFactory = JSON.parse(this.responseText);
+                document.getElementById("WiFistatus").innerHTML = wlanFactory.status;
+                document.getElementById("WiFissid").innerHTML = wlanFactory.ssid;
+                document.getElementById("WiFipassword").innerHTML = wlanFactory.password;
+                document.getElementById("WiFichannel").innerHTML = wlanFactory.channel;
+                document.getElementById("WiFirssi").innerHTML = wlanFactory.rssi;
+                document.getElementById("WiFibssid").innerHTML = wlanFactory.bssid;
+                document.getElementById("WiFimac").innerHTML = wlanFactory.mac;
+                document.getElementById("WiFilocalIP").innerHTML = wlanFactory.localIP;
+                document.getElementById("WiFinetmask").innerHTML = wlanFactory.netmask;
+                document.getElementById("WiFigateway").innerHTML = wlanFactory.gateway;
+                document.getElementById("WiFihostname").innerHTML = wlanFactory.hostname;
+                document.getElementById("WiFidns1").innerHTML = wlanFactory.dns1;
+                document.getElementById("WiFidns2").innerHTML = wlanFactory.dns2;
+                document.getElementById("WiFisoftAPIP").innerHTML = wlanFactory.softAPIP;
+            }
+        };
+
+        xmlhttp.open("GET", "/wifi", true);
+        xmlhttp.send();
+    </script>
 </head>
 
 <body>
@@ -28,9 +53,9 @@
                 <ul class="nav navbar-nav">
                     <li><a href="/">LED controller<span class="sr-only">(current)</span></a></li>
                     <li><a href="/simple.htm" title="Simple mode">Simple mode</a></li>
+                    <li><a href="/multi.htm" title="Discovery & Sync">Discovery & Sync</a></li>
                     <li><a href="/edit.htm" title="Filesystem editor">Filesystem editor</a></li>
                     <li><a href="/update.htm" title="Firmware update">Firmware update</a></li>
-                    <li><a href="/wifi.htm" title="Wi-Fi settings">Wi-Fi settings</a></li>
                     <li class="active"><a href="/info.htm" title="Information">Information</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
@@ -45,9 +70,98 @@
     </nav>
 
     <div id="container" class="container">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">Current Wi-Fi settings</h3>
+            </div>
+            <div class="panel-body">
+                <table class="table table-sm table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Connection status</td>
+                            <td id="WiFistatus"></td>
+                        </tr>
+                        <tr>
+                            <td>Network name (SSID)</td>
+                            <td id="WiFissid"></td>
+                        </tr>
+                        <tr>
+                            <td>Network password</td>
+                            <td id="WiFipassword"></td>
+                        </tr>
+                        <tr>
+                            <td>Wireless channel</td>
+                            <td id="WiFichannel"></td>
+                        </tr>
+                        <tr>
+                            <td>Signal strength (RSSI)</td>
+                            <td id="WiFirssi"></td>
+                        </tr>
+                        <tr>
+                            <td>Router MAC (BSSID)</td>
+                            <td id="WiFibssid"></td>
+                        </tr>
+                        <tr>
+                            <td>ESP MAC address</td>
+                            <td id="WiFimac"></td>
+                        </tr>
+                        <tr>
+                            <td>ESP IP address</td>
+                            <td id="WiFilocalIP"></td>
+                        </tr>
+                        <tr>
+                            <td>ESP subnet mask</td>
+                            <td id="WiFinetmask"></td>
+                        </tr>
+                        <tr>
+                            <td>ESP gateway IP address</td>
+                            <td id="WiFigateway"></td>
+                        </tr>
+                        <tr>
+                            <td>ESP hostname</td>
+                            <td id="WiFihostname"></td>
+                        </tr>
+                        <tr>
+                            <td>ESP primary DNS server</td>
+                            <td id="WiFidns1"></td>
+                        </tr>
+                        <tr>
+                            <td>ESP secondary DNS server</td>
+                            <td id="WiFidns2"></td>
+                        </tr>
+                        <tr>
+                            <td>ESP AP mode IP address</td>
+                            <td id="WiFisoftAPIP"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">Most recent changes (30.08.2020)</h3>
+            </div>
+            <div class="panel-body">
+                <span>- Added <code>Meteor</code> and <code>Colorful meteor</code> effect</span><br />
+                <span>- Added <code>Sakura</code> and <code>Aurora</code> color palette</span><br />
+                <span>- Added <code>Midnight lake</code> effect and made it use selected color palette</span><br />
+                <span>- Added <code>WiFiManager</code> to create WiFi hotspot on first run and allow choosing WiFi network to connect to</span><br />
+                <span>- Fixed mDNS</span><br />
+                <span>- Added HTTP headers to allow multiple controllers</span><br />
+                <span>- Added <code>Name</code> field to show controller name</span><br />
+                <span>- Removed <b>WiFi configuration</b> page and moved <b>WiFi status</b> data to <b>Information</b> page</span><br />
+                <span>- Added <b>Multi controller</b> mode to allow controlling multiple ESP8266 modules at the same time</span><br />
+            </div>
+        </div>
     	<div class="panel panel-info">
             <div class="panel-heading">
-                <h3 class="panel-title">Most recent changes (08.02.2020)</h3>
+                <h3 class="panel-title">Recent changes (08.02.2020)</h3>
             </div>
             <div class="panel-body">
                 <span>- Massive code refactoring for easier understanding and modification</span><br />
@@ -137,5 +251,4 @@
     <script src="js/jquery-3.1.1.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
 </body>
-
 </html>

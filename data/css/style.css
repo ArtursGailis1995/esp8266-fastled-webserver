@@ -1,22 +1,43 @@
-body { 
-	padding-bottom: 70px; 
+body {
+  padding-bottom : 70px;
 }
 
 .grid-item-color {
-  width: 4%;
-  height: 32px;
-  cursor: pointer;
+  width : 4%;
+  height : 32px;
+  cursor : pointer;
 }
 
 .grid-item-pattern {
-  width: 100px;
-  height: 100px;
-  margin: 5px;
-  padding: 6px;
-  white-space: normal;
-  cursor: pointer;
+  width : 100px;
+  height : 100px;
+  margin : 5px;
+  padding : 6px;
+  white-space : normal;
+  cursor : pointer;
 }
 
 .grid-pattern-brightness {
-  height: auto !important;
+  height : auto !important ;
+}
+
+.badgebox {
+  opacity : 0;
+}
+
+.badgebox + .badge {
+  text-indent : -999999px;
+  width : 27px;
+}
+
+.badgebox:focus + .badge {
+  box-shadow : 0 0 5px inset;
+}
+
+.badgebox:checked + .badge {
+  text-indent : 0;
+}
+
+.btn-success {
+  margin-right : 5px;
 }

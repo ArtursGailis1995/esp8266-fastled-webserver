@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>LED controller</title>
+    <title>Discovery and Sync - LED controller</title>
     <!-- request CSS from the ESP8266 web server -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/minicolors.min.css">
@@ -27,9 +27,9 @@
             </div>
             <div class="collapse navbar-collapse" id="navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="/">LED controller<span class="sr-only">(current)</span></a></li>
+                    <li><a href="/">LED controller<span class="sr-only">(current)</span></a></li>
                     <li><a href="/simple.htm" title="Simple mode">Simple mode</a></li>
-                    <li><a href="/multi.htm" title="Discovery & Sync">Discovery & Sync</a></li>
+                    <li class="active"><a href="/multi.htm" title="Discovery & Sync">Discovery & Sync</a></li>
                     <li><a href="/edit.htm" title="Filesystem editor">Filesystem editor</a></li>
                     <li><a href="/update.htm" title="Firmware update">Firmware update</a></li>
                     <li><a href="/info.htm" title="Information">Information</a></li>
@@ -46,7 +46,49 @@
     </nav>
 
     <div id="container" class="container">
-        <div class="panel panel-default">
+        <div class="panel panel-danger">
+           <div class="panel-heading">Controller discovery</div>
+           <div class="panel-body">
+              <div class="well">
+                 <span>Here you can scan your local network for LED controllers and control them at the same time! Useful for installations with multiple LED controllers. All controllers on the network must be running the same Firmware version for improved compatibility. Experimental feature, may not work in some rare cases!</span>
+              </div>
+              <form class="form-horizontal">
+                 <div id="addressesGroup" class="form-group">
+                    <label class="col-sm-2 control-label">Network</label>
+                    <div class="col-sm-4">
+                       <div class="input-group">
+                          <span class="input-group-addon">Subnet</span>
+                          <input type="text" class="form-control" id="inputSubnet" value="192.168.0">
+                       </div>
+                    </div>
+                    <div class="col-sm-3">
+                       <div class="input-group">
+                          <span class="input-group-addon">Start IP</span>
+                          <input type="number" min="1" max="254" class="form-control" id="inputStartAddress" value="1">
+                       </div>
+                    </div>
+                    <div class="col-sm-3">
+                       <div class="input-group">
+                          <span class="input-group-addon">End IP</span>
+                          <input type="number" min="1" max="254" class="form-control" id="inputEndAddress" value="254">
+                       </div>
+                    </div>
+                 </div>
+                 <div id="controllersGroup" class="form-group">
+                    <label class="col-sm-2 control-label">Actions</label>
+                    <div class="col-sm-10">
+                       <button type="button" class="btn btn-info" id="btnDiscover">Discover</button>
+                       <button type="button" class="btn btn-info" id="btnSelectAllControllers">Select all</button>
+                       <button type="button" class="btn btn-info" id="btnDeselectAllControllers">Select none</button>
+                       <div class="checkbox" id="controllersDiv">
+                       </div>
+                    </div>
+                 </div>
+              </form>
+           </div>
+        </div>
+
+        <div class="panel panel-default" id="hideBeforeDiscover" style="display: none;">
             <div class="panel-heading">LED controller</div>
             <div class="panel-body">
                 <form class="form-horizontal" id="form"></form>
@@ -55,6 +97,12 @@
     </div>
 
     <div id="templates" style="display: none">
+        <label id="controllerButtonTemplate" class="btn btn-success">
+            <input type="checkbox" class="badgebox controller-checkbox" checked>
+            <span class="badge">&check;</span>
+            <span class="controllerLabel"></span>
+        </label>
+
         <div id="sectionTemplate" class="form-group">
             <div class="col-sm-12">
                 <hr style="margin-bottom: 5px;margin-top: 5px;" />
@@ -209,12 +257,7 @@
             <div class="collapse navbar-collapse" id="navbar-collapse-2">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="/" aria-label="Refresh" title="Refresh">
-              <span class="glyphicon glyphicon-refresh" id="btnRefresh"></span>
-            </a>
-                    </li>
-                    <li>
-                        <p class="navbar-text" id="status">Loading, please wait...</p>
+                        <p class="navbar-text" id="status">Press <b>Discover</b> to begin..</p>
                     </li>
                 </ul>
             </div>
@@ -226,6 +269,6 @@
     <script src="js/bootstrap.min.js"></script>
     <script src="js/minicolors.min.js"></script>
     <script src="js/r-websocket.min.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/multi.js"></script>
 </body>
 </html>

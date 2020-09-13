@@ -362,7 +362,6 @@ void setup() {
       twinkleSpeed = 7;
     }
     
-    broadcastInt("twinkleSpeed", twinkleSpeed);
     setTwinkleSpeed(twinkleSpeed);
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(twinkleSpeed);
@@ -379,7 +378,6 @@ void setup() {
       twinkleDensity = 8;
     }
     
-    broadcastInt("twinkleDensity", twinkleDensity);
     setTwinkleDensity(twinkleDensity);
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(twinkleDensity);
@@ -396,7 +394,6 @@ void setup() {
       fadeInSpeed = 128;
     }
     
-    broadcastInt("fadeInSpeed", fadeInSpeed);
     setFadeInSpeed(fadeInSpeed);
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(fadeInSpeed);
@@ -413,7 +410,6 @@ void setup() {
       fadeOutSpeed = 128;
     }
     
-    broadcastInt("fadeOutSpeed", fadeOutSpeed);
     setFadeOutSpeed(fadeOutSpeed);
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(fadeOutSpeed);
@@ -619,7 +615,7 @@ void loop() {
     gHue++;
   }
 
-  // Switch pattern if aoutplay mode is active
+  // Switch pattern if autoplay mode is active
   if (autoplay && (millis() > autoPlayTimeout)) {
     adjustPattern(true);
     autoPlayTimeout = millis() + (autoplayDuration * 1000);
@@ -653,7 +649,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
       Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
 
         // Send message to client
-      webSocketsServer.sendTXT(num, "Connected");
+        // webSocketsServer.sendTXT(num, "Connected");
     }
     break;
 
@@ -661,10 +657,10 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
       Serial.printf("[%u] get Text: %s\n", num, payload);
 
       // Send message to client
-      webSocketsServer.sendTXT(num, "message here");
+      // webSocketsServer.sendTXT(num, "message here");
 
       // Send data to all connected clients
-      webSocketsServer.broadcastTXT("message here");
+      // webSocketsServer.broadcastTXT("message here");
     }
     break;
 
@@ -673,7 +669,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
       hexdump(payload, length);
 
       // Send message to client
-      webSocketsServer.sendBIN(num, payload, length);
+      // webSocketsServer.sendBIN(num, payload, length);
     }
     break;
   }

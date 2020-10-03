@@ -35,6 +35,7 @@ extern "C" {
 #include <WebSocketsServer.h>
 #include <FS.h>
 #include <EEPROM.h>
+#include <ArduinoOTA.h>
 
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
@@ -298,6 +299,50 @@ void setup() {
   ////////////////////////////////////////////////////////////////////
 
   httpUpdateServer.setup(&webServer);
+
+  ArduinoOTA.setHostname(nameChar);
+  
+  ArduinoOTA.onStart([]() {
+    String type;
+    
+    if (ArduinoOTA.getCommand() == U_FLASH) {
+      type = "sketch";
+    } else {
+      type = "filesystem";
+    }
+
+    SPIFFS.end();
+    Serial.println("Starting OTA update: " + type);
+  });
+  
+  ArduinoOTA.onEnd([]() {
+    Serial.println("\nEnd");
+  });
+  
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+    Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+
+    //Visually show update progress by using LED strip as progress bar
+    fill_solid(leds, (progress / (double)total) * NUM_LEDS, CRGB::Red);
+    FastLED.show();
+  });
+  
+  ArduinoOTA.onError([](ota_error_t error) {
+    Serial.printf("Error[%u]: ", error);
+    if (error == OTA_AUTH_ERROR) {
+      Serial.println("Auth failed");
+    } else if (error == OTA_BEGIN_ERROR) {
+      Serial.println("Begin failed");
+    } else if (error == OTA_CONNECT_ERROR) {
+      Serial.println("Connect failed");
+    } else if (error == OTA_RECEIVE_ERROR) {
+      Serial.println("Receive failed");
+    } else if (error == OTA_END_ERROR) {
+      Serial.println("End failed");
+    }
+  });
+  
+  ArduinoOTA.begin();
 
   webServer.on("/all", HTTP_GET, []() {
     String json = getFieldsJson(fields, fieldCount);
@@ -569,6 +614,8 @@ void loop() {
   
   // Add entropy to random number generator; we use a lot of it.
   random16_add_entropy(random(65535));
+
+  ArduinoOTA.handle();
 
   // Comment out to disable WS
   webSocketsServer.loop();

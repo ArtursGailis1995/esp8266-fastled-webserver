@@ -41,3 +41,32 @@ body {
 .btn-success {
   margin-right : 5px;
 }
+
+.form-pl-fixer {
+  padding: 0 !important;
+  border: none !important;
+}
+
+@media only screen and (max-width: 992px) {
+  .form-btn-fixer {
+    padding-right: 0 !important;
+  }
+  
+  .navbar-brand {
+    display: none !important;
+  }
+  
+  .navbar-right {
+    display: none !important;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .navbar-brand {
+    display: block !important;
+  }
+  
+  .navbar-right {
+    display: block !important;
+  }
+}

@@ -515,6 +515,7 @@ DEFINE_GRADIENT_PALETTE( Aurora_gp ) {
   255,   1,  5, 45
 };
 
+CRGBPalette16 Aurora = Aurora_gp;
 
 // Single array of defined cpt-city color palettes.
 // This will let us programmatically choose one based on

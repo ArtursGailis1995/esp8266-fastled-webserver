@@ -28,6 +28,7 @@ extern "C" {
 }
 
 #include <ESP8266WiFi.h>
+#include <ESP8266WiFiGratuitous.h>
 #include <ESP8266mDNS.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPUpdateServer.h>
@@ -156,6 +157,7 @@ PatternAndNameList patterns = {
   { night_lake,             "Midnight Lake" },
   { whiteMeteor,			"Meteor Rain" },
   { colorfulMeteor,         "Colorful Meteor Rain" },
+  { plasma,					"Plasma" },
 
   { showSolidColor,         "Solid Color" }
 };
@@ -183,7 +185,8 @@ const CRGBPalette16 palettes[] = {
   OceanColors_p,
   ForestColors_p,
   PartyColors_p,
-  HeatColors_p
+  HeatColors_p,
+  Aurora
 };
 
 // Get color palette count
@@ -198,11 +201,16 @@ const String paletteNames[paletteCount] = {
   "Ocean",
   "Forest",
   "Party",
-  "Heat"
+  "Heat",
+  "Aurora"
 };
 
 // Include fields
 #include "Fields.h"
+
+// Use qsuba for smooth pixel colouring and qsubd for non-smooth pixel colouring
+#define qsubd(x, b)  ((x>b)?b:0)
+#define qsuba(x, b)  ((x>b)?x-b:0)
 
 //////////////////////////////////////////////////////////////////
 /////////////////////// MAIN SETUP FUNCTION //////////////////////
@@ -212,6 +220,9 @@ void setup() {
   WiFi.mode(WIFI_STA);
   // Do not allow Wi-Fi module to sleep
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
+
+  // Try to prevent issues with some Mikrotik access points not responding after ~20 minutes
+  experimental::ESP8266WiFiGratuitous::stationKeepAliveSetIntervalMs();
 
   Serial.begin(115200);
   Serial.setDebugOutput(false);
@@ -536,6 +547,26 @@ void setup() {
     String wjson = getWiFiJson();
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     webServer.send(200, "application/json", wjson);
+  });
+
+  webServer.on("/disconnectNetwork", HTTP_POST, []() {
+    String value = webServer.arg("resetNetwork");
+
+    if(value == "1") {
+      webServer.sendHeader("Access-Control-Allow-Origin", "*");
+      webServer.send(200, "text/plain", "Success!");
+      delay(500);
+      Serial.println("Erase settings and restart ...");
+      wifiManager.resetSettings();
+      delay(500);
+      ESP.restart(); 
+    }
+    else {
+      Serial.print("Cancelling Wi-Fi setting reset, reason: ");
+      Serial.println(value);
+      webServer.sendHeader("Access-Control-Allow-Origin", "*");
+      webServer.send(200, "text/plain", "Task cancelled!");
+    }
   });
 
   // List directory contents
@@ -1503,6 +1534,19 @@ void meteorRain(bool useColorPalettes) {
   else {
     meteorCounter = 0;
     return;
+  }
+}
+
+// Plasma effect
+void plasma() {
+  int thisPhase = beatsin8(6,-64,64);
+  int thatPhase = beatsin8(7,-64,64);
+
+  for (int k=0; k<NUM_LEDS; k++) {
+    int colorIndex = cubicwave8((k*23)+thisPhase)/2 + cos8((k*15)+thatPhase)/2;
+    int thisBright = qsuba(colorIndex, beatsin8(7,0,96));
+
+    leds[k] = ColorFromPalette(gCurrentPalette, colorIndex, thisBright, LINEARBLEND);
   }
 }
 

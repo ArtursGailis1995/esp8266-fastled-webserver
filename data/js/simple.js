@@ -53,7 +53,8 @@ var patterns = [
   "Pacifica Loop",
   "Midnight Lake",
   "Meteor Rain",
-  "Colorful Meteor Rain"
+  "Colorful Meteor Rain",
+  "Plasma"
 ];
 
 // if used behind HTTPS reverse proxy, replace 'ws' with 'wss' like in the line below

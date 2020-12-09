@@ -30,7 +30,7 @@
                     <li><a href="/simple.htm" title="Simple mode">Simple mode</a></li>
                     <li><a href="/multi.htm" title="Discovery & Sync">Discovery & Sync</a></li>
                     <li><a href="/edit.htm" title="Filesystem editor">Filesystem editor</a></li>
-                    <li class="active"><a href="/update.htm" title="Firmware update">Firmware update</a></li>
+                    <li class="active"><a href="/update.htm" title="Firmware update">Firmware & Wi-Fi</a></li>
                     <li><a href="/info.htm" title="Information">Information</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
@@ -46,13 +46,13 @@
 
     <div id="container" class="container">
         <div class="panel panel-danger">
-            <div class="panel-heading">ESP8266 firmware update</div>
+            <div class="panel-heading">Update firmware</div>
             <div class="panel-body">
 				<div class="well">
-					<span>The firmware must be updated by providing compiled <code>*.bin</code> file. When you click "Verify" button in Arduino IDE, <code>*.bin</code> file is compiled and stored in a <code>%TEMP%</code> folder, in folder starting with <code>arduino_build_</code>. You can use Win+R key combination and type in <code>%TEMP%</code> to quickly access temporary files location on your Windows computer.</span><br /><br />
-					<span>The file system (SPIFFS) can be updated. To update it, click <code>Tools</code> > <code>ESP8266 Sketch Data Upload</code> in Arduino IDE. It will compile <code>*.spiffs.bin</code> file and place it in the same folder as <code>*.bin</code> firmware file. If it fails, make sure that <code>ESP8266FS</code> tool is installed and working, or update manually via USB.</span><br /><br />
-					<span>ESP8266 must be power-cycled at least once after update before it can be updated again (disconnected from power source not restarted)!</span><br /><br />
-					<span><b>To prevent losing SPIFFS contents after each update, make sure <code>Tools</code> > <code>Erase Flash</code> > <code>Only Sketch</code> is selected in Arduino IDE before compiling!</b></span>
+					<span>You can now update firmware from Arduino IDE - go to <code>Tools > Port..</code> and choose your network connected controller.</span><br /><br />
+					<span>To update the firmware from this page: compile <code>*.bin</code> file. When you click <code>Verify</code> button in Arduino IDE, <code>*.bin</code> file is compiled and stored in a <code>%TEMP%</code> folder, in a folder starting with <code>arduino_build_</code>. You can use Win+R key combination and type in <code>%TEMP%</code> to quickly access temporary files location on your Windows computer.</span><br /><br />
+					<span>To update the file system, click <code>Tools > ESP8266 Sketch Data Upload</code> in Arduino IDE. It will compile <code>*.spiffs.bin</code> file and place it in the same folder as your firmware file. If it fails, make sure that <code>ESP8266FS</code> tool is installed and working, or update manually via USB or network port.</span><br /><br />
+					<span><b>To prevent losing file system contents after each update, make sure <code>Tools > Erase Flash > Only Sketch</code> is selected in Arduino IDE before updating over USB!</b></span>
 				</div>
 				<div class="well">
 					<form method='POST' action='/update' enctype='multipart/form-data'>
@@ -67,6 +67,31 @@
 						<input type='file' accept='.bin' name='filesystem'><br />
 						<input type='submit' value='Update File System' class="btn-danger">
 					</form>
+				</div>
+            </div>
+        </div>
+
+		<div class="panel panel-danger">
+            <div class="panel-heading">Reset Wi-Fi settings</div>
+            <div class="panel-body">
+				<div class="well">
+					<span>Wi-Fi settings can be reset in case you need to connect the controller to different network or your password has changed. Resetting will enable AP mode and allow you to repeat initial configuration!</span><br /><br />
+					<span><b>Instructions:</b></span><br />
+					<span>1. Reset settings</span><br />
+					<span>2. Connect to ESP-***** Wi-Fi network on your smartphone or computer</span><br />
+					<span>3. Go to http://192.168.4.1 (should open automatically) and re-enter your Wi-Fi information</span><br />
+					<span>4. Power cycle the controller if needed.</span>
+				</div>
+				<div class="well">
+					<form method="post" action="/disconnectNetwork">
+			            <fieldset>
+			            <span>Reset all Wi-Fi settings, disconnect from current Wi-Fi network and enable AP mode for reconnecting?</span><br />
+			            <input type="radio" name="resetNetwork" value="1">Yes<br>
+			            <input type="radio" name="resetNetwork" value="0">No<br>
+			            <br>
+			            <input type="submit" value="Do it!" class="btn-danger">
+			          </fieldset>
+			        </form>
 				</div>
             </div>
         </div>

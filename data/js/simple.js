@@ -12,7 +12,7 @@ var postValueTimer = {};
 var ignoreColorChange = false;
 
 var patterns = [
-  "Pride",
+  "Dynamic Rainbow",
   "Color Waves",
   "Gradient Sweep",
   "Gradient Showcase",

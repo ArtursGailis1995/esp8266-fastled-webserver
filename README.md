@@ -3,6 +3,8 @@ FastLED + ESP8266 Web Server
 
 Control an addressable RGB LED strip with an ESP8266 via a WEB browser.
 
+⚠⚠⚠ Do not update ESP core to 3.0.0 and above. Only works with ESP core 2.7.4 and below due to timing issues! ⚠⚠⚠
+
 ## Parts used for this project
 
 * ESP8266 NodeMCU V3 developement board<br/>

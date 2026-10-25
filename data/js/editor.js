@@ -337,14 +337,13 @@ function createEditor(e, f, g, h, i) {
 	function httpGet(a) {
 		j = new XMLHttpRequest();
 		j.onreadystatechange = httpGetProcessRequest;
-		j.open("GET", a, true);
+		j.open("GET", a + "?_cb=" + Date.now(), true);
 		j.send(null)
 	}
 
 	if (g !== "plain") k.getSession().setMode("ace/mode/" + g);
 
 	k.setTheme("ace/theme/" + h);
-	k.$blockScrolling = Infinity;
 	k.getSession().setUseSoftTabs(true);
 	k.getSession().setTabSize(2);
 	k.setHighlightActiveLine(true);

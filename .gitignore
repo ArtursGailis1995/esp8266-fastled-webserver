@@ -1,0 +1,6 @@
+# Private admin credentials, copy secrets.example.h to secrets.h
+secrets.h
+
+# Build output and generated file system images
+build/
+*.bin

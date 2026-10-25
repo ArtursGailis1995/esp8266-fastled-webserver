@@ -3,41 +3,33 @@
 
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Firmware update - LED controller</title>
     <!-- request CSS from the ESP8266 web server -->
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css?v=2">
+    <link rel="stylesheet" href="css/style.css?v=2">
     <link rel="icon" href="images/rgb.png">
 </head>
 
 <body>
-    <nav class="navbar navbar-default navbar-static-top" id="top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-3">
         <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-                <a class="navbar-brand" href="/"><img src="/images/rgb.png" alt="LOGO" style="width: 24px; height: 24px;" /></a>
-            </div>
-            <div class="collapse navbar-collapse" id="navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                    <li><a href="/">LED controller<span class="sr-only">(current)</span></a></li>
-                    <li><a href="/simple.htm" title="Simple mode">Simple mode</a></li>
-                    <li><a href="/multi.htm" title="Discovery & Sync">Discovery & Sync</a></li>
-                    <li><a href="/edit.htm" title="Filesystem editor">Filesystem editor</a></li>
-                    <li class="active"><a href="/update.htm" title="Firmware update">Firmware & Wi-Fi</a></li>
-                    <li><a href="/info.htm" title="Information">Information</a></li>
+            <a class="navbar-brand" href="/"><img src="/images/rgb.png" alt="Home" width="24" height="24"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">LED controller</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/simple.htm">Simple mode</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/multi.htm">Discovery & Sync</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/edit.htm">Filesystem editor</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="/update.htm">Firmware & Wi-Fi</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/info.htm">Information</a></li>
                 </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a href="https://github.com/ArtursGailis1995/esp8266-fastled-webserver">
-              <img style="height: 16px;" src="/images/github.ico" alt="GIT" />
-            </a>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/ArtursGailis1995/esp8266-fastled-webserver" title="GitHub"><img src="/images/github.ico" alt="GitHub" height="16"></a>
                     </li>
                 </ul>
             </div>
@@ -45,62 +37,68 @@
     </nav>
 
     <div id="container" class="container">
-        <div class="panel panel-danger">
-            <div class="panel-heading">Update firmware</div>
-            <div class="panel-body">
-				<div class="well">
-					<span>You can now update firmware from Arduino IDE - go to <code>Tools > Port..</code> and choose your network connected controller.</span><br /><br />
-					<span>To update the firmware from this page: compile <code>*.bin</code> file. When you click <code>Verify</code> button in Arduino IDE, <code>*.bin</code> file is compiled and stored in a <code>%TEMP%</code> folder, in a folder starting with <code>arduino_build_</code>. You can use Win+R key combination and type in <code>%TEMP%</code> to quickly access temporary files location on your Windows computer.</span><br /><br />
-					<span>To update the file system, click <code>Tools > ESP8266 Sketch Data Upload</code> in Arduino IDE. It will compile <code>*.spiffs.bin</code> file and place it in the same folder as your firmware file. If it fails, make sure that <code>ESP8266FS</code> tool is installed and working, or update manually via USB or network port.</span><br /><br />
-					<span><b>To prevent losing file system contents after each update, make sure <code>Tools > Erase Flash > Only Sketch</code> is selected in Arduino IDE before updating over USB!</b></span>
-				</div>
-				<div class="well">
-					<form method='POST' action='/update' enctype='multipart/form-data'>
-						Firmware:
-						<input type='file' accept='.bin' name='firmware'><br />
-						<input type='submit' value='Update Firmware' class="btn-danger">
-					</form>
-				</div>
-				<div class="well">
-					<form method='POST' action='/update' enctype='multipart/form-data'>
-						File System (SPIFFS):
-						<input type='file' accept='.bin' name='filesystem'><br />
-						<input type='submit' value='Update File System' class="btn-danger">
-					</form>
-				</div>
+        <div class="card mb-3">
+            <div class="card-header text-bg-danger">Update firmware</div>
+            <div class="card-body">
+                <div class="well">
+                    <p><b>Over the network from Arduino IDE:</b> go to <code>Tools &gt; Port</code>, choose this controller from the <i>Network ports</i> list and click <code>Upload</code>. The IDE will ask for the admin password (<code>ADMIN_PASSWORD</code> in <code>secrets.h</code>).</p>
+                    <p><b>Firmware file for this page:</b> in Arduino IDE 2 click <code>Sketch &gt; Export Compiled Binary</code> (<kbd>Alt</kbd> + <kbd>Ctrl</kbd> + <kbd>S</kbd>). The file is saved inside the sketch folder as <code>build/esp8266.esp8266.nodemcuv2/esp8266-fastled-webserver.ino.bin</code>. Click <code>Sketch &gt; Show Sketch Folder</code> to open it quickly.</p>
+                    <p><b>File system file for this page:</b> the web interface is stored in a <code>LittleFS</code> image built from the <code>data</code> folder. Create it with the <code>mklittlefs</code> tool, which is installed together with the ESP8266 board package (on Windows: <code>%LOCALAPPDATA%\Arduino15\packages\esp8266\tools\mklittlefs</code>). Run it in the sketch folder; these values are for the default <i>4MB (FS:2MB OTA:~1019KB)</i> flash layout:</p>
+                    <pre>mklittlefs -c data -p 256 -b 8192 -s 2072576 littlefs-4M2M.bin</pre>
+                    <p>To upload the file system over USB instead, install the <code>arduino-littlefs-upload</code> plugin and run <code>Upload LittleFS to Pico/ESP8266/ESP32</code> from the command palette (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>). Close the Serial Monitor first.</p>
+                    <p><b>To keep the file system contents when updating over USB, make sure <code>Tools &gt; Erase Flash &gt; Only Sketch</code> is selected in Arduino IDE!</b></p>
+                    <p class="mb-0">The controller restarts after each update. After a file system update, refresh this page with <kbd>Ctrl</kbd> + <kbd>F5</kbd> so the browser does not show old cached files.</p>
+                </div>
+                <div class="well">
+                    <form method="POST" action="/update" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label" for="firmwareFile">Firmware (<code>*.ino.bin</code>)</label>
+                            <input type="file" class="form-control" accept=".bin" name="firmware" id="firmwareFile" required>
+                        </div>
+                        <input type="submit" value="Update firmware" class="btn btn-danger">
+                    </form>
+                </div>
+                <div class="well">
+                    <form method="POST" action="/update" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label" for="filesystemFile">File system (<code>LittleFS</code> image, <code>*.bin</code>)</label>
+                            <input type="file" class="form-control" accept=".bin" name="filesystem" id="filesystemFile" required>
+                        </div>
+                        <input type="submit" value="Update file system" class="btn btn-danger">
+                    </form>
+                </div>
             </div>
         </div>
 
-		<div class="panel panel-danger">
-            <div class="panel-heading">Reset Wi-Fi settings</div>
-            <div class="panel-body">
-				<div class="well">
-					<span>Wi-Fi settings can be reset in case you need to connect the controller to different network or your password has changed. Resetting will enable AP mode and allow you to repeat initial configuration!</span><br /><br />
-					<span><b>Instructions:</b></span><br />
-					<span>1. Reset settings</span><br />
-					<span>2. Connect to ESP-***** Wi-Fi network on your smartphone or computer</span><br />
-					<span>3. Go to http://192.168.4.1 (should open automatically) and re-enter your Wi-Fi information</span><br />
-					<span>4. Power cycle the controller if needed.</span>
-				</div>
-				<div class="well">
-					<form method="post" action="/disconnectNetwork">
-			            <fieldset>
-			            <span>Reset all Wi-Fi settings, disconnect from current Wi-Fi network and enable AP mode for reconnecting?</span><br />
-			            <input type="radio" name="resetNetwork" value="1">Yes<br>
-			            <input type="radio" name="resetNetwork" value="0">No<br>
-			            <br>
-			            <input type="submit" value="Do it!" class="btn-danger">
-			          </fieldset>
-			        </form>
-				</div>
+        <div class="card mb-3">
+            <div class="card-header text-bg-danger">Reset Wi-Fi settings</div>
+            <div class="card-body">
+                <div class="well">
+                    <p>Wi-Fi settings can be reset in case you need to connect the controller to a different network or your Wi-Fi password has changed. Resetting enables access point mode and lets you repeat the initial configuration.</p>
+                    <p><b>Instructions:</b></p>
+                    <ol class="mb-0">
+                        <li>Reset settings below</li>
+                        <li>Connect to the <code>ESP8266-XXXX</code> Wi-Fi network on your smartphone or computer (<code>XXXX</code> is the end of the controller MAC address, see <a href="/info.htm">Information</a> page)</li>
+                        <li>Go to <code>http://192.168.4.1</code> (should open automatically) and enter your Wi-Fi information</li>
+                        <li>Power cycle the controller if needed</li>
+                    </ol>
+                </div>
+                <div class="well">
+                    <form method="POST" action="/disconnectNetwork" onsubmit="return confirm('Reset Wi-Fi settings and restart the controller?');">
+                        <p>Reset all Wi-Fi settings, disconnect from current Wi-Fi network and enable AP mode for reconnecting?</p>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="resetNetwork" value="1" id="resetNetwork" required>
+                            <label class="form-check-label" for="resetNetwork">Yes, reset Wi-Fi settings</label>
+                        </div>
+                        <input type="submit" value="Reset Wi-Fi" class="btn btn-danger">
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- request js from the ESP8266 web server -->
-    <script src="js/jquery-3.1.1.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <!-- Added Isotope Library to fix SIMPLE mode -->
-    <script src="js/isotope.pkgd.min.js"></script>
+    <script src="js/jquery.min.js?v=2"></script>
+    <script src="js/bootstrap.bundle.min.js?v=2"></script>
 </body>
 </html>

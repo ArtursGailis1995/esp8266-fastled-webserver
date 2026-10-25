@@ -2,10 +2,11 @@
 var address = location.hostname;
 var urlBase = "";
 
-// used when hosting the site somewhere other than the ESP8266 (handy for testing without waiting forever to upload to SPIFFS)
+// used when hosting the site somewhere other than the ESP8266 (handy for testing without waiting forever to upload to the file system)
 // var address = "192.168.1.13";
 // var urlBase = "http://" + address + "/";
 
+// One timer per field, so changing two controls quickly does not drop the first change
 var postColorTimer = {};
 var postValueTimer = {};
 
@@ -61,7 +62,7 @@ var patterns = [
 //var ws = new ReconnectingWebSocket('wss://' + address + ':81/', ['arduino']);
 
 var ws = new ReconnectingWebSocket('ws://' + address + ':81/', ['arduino']);
-ws.debug = true;
+ws.debug = false;
 
 ws.onmessage = function(evt) {
   if(evt.data != null)
@@ -72,20 +73,20 @@ ws.onmessage = function(evt) {
       case "power":
         if(data.value == 1) {
           $("#btnOn").attr("class", "btn btn-primary");
-          $("#btnOff").attr("class", "btn btn-default");
+          $("#btnOff").attr("class", "btn btn-outline-primary");
         } else {
           $("#btnOff").attr("class", "btn btn-primary");
-          $("#btnOn").attr("class", "btn btn-default");
+          $("#btnOn").attr("class", "btn btn-outline-primary");
         }
         break;
 
       case "pattern":
-        $(".grid-item-pattern").attr("class", "grid-item-pattern btn btn-default");
+        $(".grid-item-pattern").attr("class", "grid-item-pattern btn btn-outline-primary");
         $("#pattern-button-" + data.value).attr("class", "grid-item-pattern btn btn-primary");
         break;
 
       case "brightness":
-        $(".form-control").val(data.value);
+        $("#form-group-brightness .input, #form-group-brightness .slider").val(data.value);
         break;
     }
   }
@@ -123,13 +124,13 @@ $(document).ready(function() {
   $("#btnOn").click(function() {
     postValue("power", 1);
     $("#btnOn").attr("class", "btn btn-primary");
-    $("#btnOff").attr("class", "btn btn-default");
+    $("#btnOff").attr("class", "btn btn-outline-primary");
   });
 
   $("#btnOff").click(function() {
     postValue("power", 0);
     $("#btnOff").attr("class", "btn btn-primary");
-    $("#btnOn").attr("class", "btn btn-default");
+    $("#btnOn").attr("class", "btn btn-outline-primary");
   });
 
   $("#status").html("Ready");
@@ -163,7 +164,7 @@ function addNumberField(field) {
   input.val(field.value);
   slider.val(field.value);
 
-  slider.on("change mousemove", function () {
+  slider.on("input", function () {
     input.val($(this).val());
   });
 
@@ -181,7 +182,7 @@ function addNumberField(field) {
     delayPostValue(field.name, value);
   });
 
-  $("#brigthnessSliderRow").append(template);
+  $("#brightnessSliderRow").append(template);
 }
 
 function addColorButtons() {
@@ -197,11 +198,6 @@ function addColorButtons() {
     }
   }
 
-  $('.grid-color').isotope({
-    itemSelector: '.grid-item-color',
-    layoutMode: 'fitRows'
-  });
-
 }
 
 var colorButtonIndex = 0;
@@ -215,8 +211,8 @@ function addColorButton(h, s, l) {
     var rgb = $(this).css('backgroundColor');
     var components = rgbToComponents(rgb);
 
-    $(".grid-item-color").css("border", "none");
-    $(this).css("border", "1px solid");
+    $(".grid-item-color").removeClass("selected");
+    $(this).addClass("selected");
 
     postColor("solidColor", components);
   });
@@ -234,17 +230,12 @@ function addPatternButtons(patternField) {
     template.text(pattern);
     template.click(function() {
       postValue("patternName", pattern);
-      $(".grid-item-color").css("border", "none");
-      $(".grid-item-pattern").attr("class", "grid-item-pattern btn btn-default");
+      $(".grid-item-color").removeClass("selected");
+      $(".grid-item-pattern").attr("class", "grid-item-pattern btn btn-outline-primary");
       $(this).attr("class", "grid-item-pattern btn btn-primary");
     });
 
     $("#patternGrid").append(template);
-  });
-
-  $('.grid-pattern').isotope({
-    itemSelector: '.grid-item-pattern',
-    layoutMode: 'fitRows',
   });
 
   $("#pattern-button-" + patternField.value).attr("class", "grid-item-pattern btn btn-primary");
@@ -261,12 +252,13 @@ function postValue(name, value) {
     } else {
       $("#status").html("Set " + name + ": " + data);
     }
-  });
+  })
+  .fail(function(jqXHR, textStatus) { console.log("Fail: " + name + " " + textStatus); });
 }
 
 function delayPostValue(name, value) {
-  clearTimeout(postValueTimer);
-  postValueTimer = setTimeout(function() {
+  clearTimeout(postValueTimer[name]);
+  postValueTimer[name] = setTimeout(function() {
     postValue(name, value);
   }, 300);
 }
@@ -283,8 +275,8 @@ function postColor(name, value) {
 }
 
 function delayPostColor(name, value) {
-  clearTimeout(postColorTimer);
-  postColorTimer = setTimeout(function() {
+  clearTimeout(postColorTimer[name]);
+  postColorTimer[name] = setTimeout(function() {
     postColor(name, value);
   }, 300);
 }

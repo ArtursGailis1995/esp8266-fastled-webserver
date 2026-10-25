@@ -68,12 +68,12 @@ bool handleFileRead(String path) {
   String contentType = getContentType(path);
   String pathWithGz = path + ".gz";
 
-  if(SPIFFS.exists(pathWithGz) || SPIFFS.exists(path)) {
-    if(SPIFFS.exists(pathWithGz)) {
+  if(LittleFS.exists(pathWithGz) || LittleFS.exists(path)) {
+    if(LittleFS.exists(pathWithGz)) {
       path += ".gz";
     }
 
-    File file = SPIFFS.open(path, "r");
+    File file = LittleFS.open(path, "r");
     size_t sent = webServer.streamFile(file, contentType);
     file.close();
 
@@ -98,7 +98,7 @@ void handleFileUpload() {
 
     Serial.print("handleFileUpload Name: "); 
     Serial.println(filename);
-    fsUploadFile = SPIFFS.open(filename, "w");
+    fsUploadFile = LittleFS.open(filename, "w");
     filename = String();
   } 
   else if(upload.status == UPLOAD_FILE_WRITE) {
@@ -127,11 +127,11 @@ void handleFileDelete() {
     return webServer.send(500, "text/plain", "BAD PATH");
   }
 
-  if(!SPIFFS.exists(path)) {
+  if(!LittleFS.exists(path)) {
     return webServer.send(404, "text/plain", "FileNotFound");
   }
 
-  SPIFFS.remove(path);
+  LittleFS.remove(path);
   webServer.send(200, "text/plain", "");
   path = String();
 }
@@ -148,11 +148,11 @@ void handleFileCreate() {
     return webServer.send(500, "text/plain", "BAD PATH");
   }
 
-  if(SPIFFS.exists(path)) {
+  if(LittleFS.exists(path)) {
     return webServer.send(500, "text/plain", "FILE EXISTS");
   }
 
-  File file = SPIFFS.open(path, "w");
+  File file = LittleFS.open(path, "w");
 
   if(file) {
     file.close();
@@ -165,6 +165,24 @@ void handleFileCreate() {
   path = String();
 }
 
+// Call 'callback' for every file below 'dirPath', including files in subdirectories.
+// LittleFS has real directories (SPIFFS was flat), so walk them to keep the same file list.
+void forEachFile(const String& dirPath, std::function<void(const String& path, size_t size)> callback) {
+  String base = dirPath.endsWith("/") ? dirPath : dirPath + "/";
+  Dir dir = LittleFS.openDir(base);
+
+  while (dir.next()) {
+    String path = base + dir.fileName();
+
+    if (dir.isDirectory()) {
+      forEachFile(path, callback);
+    }
+    else {
+      callback(path, dir.fileSize());
+    }
+  }
+}
+
 void handleFileList() {
   if(!webServer.hasArg("dir")) {
     webServer.send(500, "text/plain", "BAD ARGS"); 
@@ -173,26 +191,26 @@ void handleFileList() {
   
   String path = webServer.arg("dir");
   Serial.println("handleFileList: " + path);
-  Dir dir = SPIFFS.openDir(path);
-  path = String();
+
+  if (!path.endsWith("/")) {
+    path += "/";
+  }
 
   String output = "[";
-  while(dir.next()) {
-    File entry = dir.openFile("r");
 
+  // Names are relative to the requested directory, e.g. "css/style.css", like SPIFFS listed them
+  forEachFile(path, [&](const String& filePath, size_t size) {
     if (output != "[") {
       output += ',';
     }
 
-    bool isDir = false;
-    output += "{\"type\":\"";
-    output += (isDir)?"dir":"file";
-    output += "\",\"name\":\"";
-    output += String(entry.name()).substring(1);
-    output += "\"}";
-    entry.close();
-  }
+    output += "{\"type\":\"file\",\"name\":\"";
+    output += filePath.substring(path.length());
+    output += "\",\"size\":";
+    output += String(size);
+    output += "}";
+  });
   
   output += "]";
-  webServer.send(200, "text/json", output);
+  webServer.send(200, "application/json", output);
 }

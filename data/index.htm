@@ -3,42 +3,34 @@
 
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>LED controller</title>
     <!-- request CSS from the ESP8266 web server -->
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/minicolors.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css?v=2">
+    <link rel="stylesheet" href="css/jquery.minicolors.css?v=2">
+    <link rel="stylesheet" href="css/style.css?v=2">
     <link rel="icon" href="images/rgb.png">
 </head>
 
-<body>
-    <nav class="navbar navbar-default navbar-static-top" id="top">
+<body class="has-bottom-bar">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-3">
         <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-                <a class="navbar-brand" href="/"><img src="/images/rgb.png" alt="LOGO" style="width: 24px; height: 24px;" /></a>
-            </div>
-            <div class="collapse navbar-collapse" id="navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                    <li class="active"><a href="/">LED controller<span class="sr-only">(current)</span></a></li>
-                    <li><a href="/simple.htm" title="Simple mode">Simple mode</a></li>
-                    <li><a href="/multi.htm" title="Discovery & Sync">Discovery & Sync</a></li>
-                    <li><a href="/edit.htm" title="Filesystem editor">Filesystem editor</a></li>
-                    <li><a href="/update.htm" title="Firmware update">Firmware & Wi-Fi</a></li>
-                    <li><a href="/info.htm" title="Information">Information</a></li>
+            <a class="navbar-brand" href="/"><img src="/images/rgb.png" alt="Home" width="24" height="24"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="/">LED controller</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/simple.htm">Simple mode</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/multi.htm">Discovery & Sync</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/edit.htm">Filesystem editor</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/update.htm">Firmware & Wi-Fi</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/info.htm">Information</a></li>
                 </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a href="https://github.com/ArtursGailis1995/esp8266-fastled-webserver">
-              <img style="height: 16px;" src="/images/github.ico" alt="GIT" />
-            </a>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/ArtursGailis1995/esp8266-fastled-webserver" title="GitHub"><img src="/images/github.ico" alt="GitHub" height="16"></a>
                     </li>
                 </ul>
             </div>
@@ -46,186 +38,143 @@
     </nav>
 
     <div id="container" class="container">
-        <div class="panel panel-default">
-            <div class="panel-heading">LED controller</div>
-            <div class="panel-body">
-                <form class="form-horizontal" id="form"></form>
+        <div class="card mb-3">
+            <div class="card-header">LED controller</div>
+            <div class="card-body">
+                <form id="form" onsubmit="return false;"></form>
             </div>
         </div>
     </div>
 
-    <div id="templates" style="display: none">
-        <div id="sectionTemplate" class="form-group">
-            <div class="col-sm-12">
-                <hr style="margin-bottom: 5px;margin-top: 5px;" />
+    <div id="templates" class="d-none">
+        <div id="sectionTemplate" class="row">
+            <div class="col-12">
+                <hr class="my-2">
             </div>
         </div>
 
-        <div id="numberTemplate" class="form-group">
-            <label class="col-sm-2 control-label"></label>
-            <div class="col-sm-2">
-                <input class="form-control input" type="number" step="1" min="0" max="255" />
+        <div id="numberTemplate" class="row mb-3 align-items-center">
+            <label class="col-sm-2 col-form-label control-label"></label>
+            <div class="col-4 col-sm-2">
+                <input class="form-control input" type="number" step="1" min="0" max="255">
             </div>
-            <div class="col-sm-8">
-                <input class="form-control slider form-pl-fixer" type="range" step="1" min="0" max="255" />
+            <div class="col-8 col-sm-8">
+                <input class="form-range slider" type="range" step="1" min="0" max="255">
             </div>
         </div>
 
-        <div id="booleanTemplate" class="form-group">
-            <label class="col-sm-2 control-label"></label>
+        <div id="booleanTemplate" class="row mb-3 align-items-center">
+            <label class="col-sm-2 col-form-label control-label"></label>
             <div class="col-sm-10">
                 <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-default" id="btnOn">On</button>
-                    <button type="button" class="btn btn-default" id="btnOff">Off</button>
+                    <button type="button" class="btn btn-outline-primary" id="btnOn">On</button>
+                    <button type="button" class="btn btn-outline-primary" id="btnOff">Off</button>
                 </div>
             </div>
         </div>
 
-        <div id="selectTemplate" class="form-group">
-            <label class="col-sm-2 control-label"></label>
-            <div class="col-sm-8">
-                <select class="form-control"></select>
+        <div id="selectTemplate" class="row mb-3 align-items-center">
+            <label class="col-sm-2 col-form-label control-label"></label>
+            <div class="col">
+                <select class="form-select"></select>
             </div>
-            <div class="col-sm-2 form-btn-fixer">
-                <div class="btn-group" role="group" aria-label="...">
-                    <button type="button" class="btn btn-default btn-previous" aria-label="Previous" title="Previous">
-            <span class="glyphicon glyphicon-chevron-left"></span>
-          </button>
-                    <button type="button" class="btn btn-default btn-next" aria-label="Next" title="Next">
-            <span class="glyphicon glyphicon-chevron-right"></span>
-          </button>
+            <div class="col-auto">
+                <div class="btn-group" role="group" aria-label="Previous or next">
+                    <button type="button" class="btn btn-outline-secondary btn-previous" aria-label="Previous" title="Previous">
+                        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-next" aria-label="Next" title="Next">
+                        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/></svg>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <div id="colorPaletteTemplate" class="form-group">
-            <label class="col-sm-2 control-label color-label"></label>
+        <div id="colorPaletteTemplate" class="row mb-3 align-items-center">
+            <label class="col-sm-2 col-form-label control-label color-label"></label>
             <div class="col-sm-10">
-                <div class="btn-group btn-group-justified" role="group">
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default btn-color" style="background: #FF0000;" title="Red">&nbsp;</button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default btn-color" style="background: #FF8000;" title="Orange">&nbsp;</button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default btn-color" style="background: #FFFF00;" title="Yellow">&nbsp;</button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default btn-color" style="background: #80FF00;" title="Chartreuse">&nbsp;</button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default btn-color" style="background: #00FF00;" title="Green">&nbsp;</button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default btn-color" style="background: #00FF80;" title="Spring Green">&nbsp;</button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default btn-color" style="background: #00FFFF;" title="Cyan">&nbsp;</button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default btn-color" style="background: #0080FF;" title="Azure">&nbsp;</button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default btn-color" style="background: #0000FF;" title="Blue">&nbsp;</button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default btn-color" style="background: #8000FF;" title="Violet">&nbsp;</button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default btn-color" style="background: #FF00FF;" title="Magenta">&nbsp;</button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default btn-color" style="background: #FF0080;" title="Rose">&nbsp;</button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default btn-color" style="background: #FFFFFF;" title="White">&nbsp;</button>
-                    </div>
+                <div class="btn-group w-100" role="group" aria-label="Color presets">
+                    <button type="button" class="btn btn-color" style="background-color: #FF0000;" title="Red" aria-label="Red"></button>
+                    <button type="button" class="btn btn-color" style="background-color: #FF8000;" title="Orange" aria-label="Orange"></button>
+                    <button type="button" class="btn btn-color" style="background-color: #FFFF00;" title="Yellow" aria-label="Yellow"></button>
+                    <button type="button" class="btn btn-color" style="background-color: #80FF00;" title="Chartreuse" aria-label="Chartreuse"></button>
+                    <button type="button" class="btn btn-color" style="background-color: #00FF00;" title="Green" aria-label="Green"></button>
+                    <button type="button" class="btn btn-color" style="background-color: #00FF80;" title="Spring Green" aria-label="Spring Green"></button>
+                    <button type="button" class="btn btn-color" style="background-color: #00FFFF;" title="Cyan" aria-label="Cyan"></button>
+                    <button type="button" class="btn btn-color" style="background-color: #0080FF;" title="Azure" aria-label="Azure"></button>
+                    <button type="button" class="btn btn-color" style="background-color: #0000FF;" title="Blue" aria-label="Blue"></button>
+                    <button type="button" class="btn btn-color" style="background-color: #8000FF;" title="Violet" aria-label="Violet"></button>
+                    <button type="button" class="btn btn-color" style="background-color: #FF00FF;" title="Magenta" aria-label="Magenta"></button>
+                    <button type="button" class="btn btn-color" style="background-color: #FF0080;" title="Rose" aria-label="Rose"></button>
+                    <button type="button" class="btn btn-color" style="background-color: #FFFFFF;" title="White" aria-label="White"></button>
                 </div>
             </div>
         </div>
 
         <div id="colorTemplate">
-            <div class="form-group">
-                <!-- <label class="col-sm-2 control-label color-label"></label> -->
-                <div class="col-sm-12 col-sm-offset-2">
-                    <input type="text" class="form-control minicolors" />
+            <div class="row mb-3">
+                <div class="col-sm-10 offset-sm-2">
+                    <input type="text" class="form-control minicolors">
                 </div>
             </div>
-            <div class="form-group">
-                <label class="col-sm-2 control-label">Red</label>
-                <div class="col-sm-2">
-                    <input class="form-control color-red-input" type="number" step="1" min="0" max="255" />
+            <div class="row mb-3 align-items-center">
+                <label class="col-sm-2 col-form-label">Red</label>
+                <div class="col-4 col-sm-2">
+                    <input class="form-control color-red-input" type="number" step="1" min="0" max="255">
                 </div>
-                <div class="col-sm-8">
-                    <input class="form-control color-red-slider form-pl-fixer" type="range" step="1" min="0" max="255" />
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-2 control-label">Green</label>
-                <div class="col-sm-2">
-                    <input class="form-control color-green-input" type="number" step="1" min="0" max="255" />
-                </div>
-                <div class="col-sm-8">
-                    <input class="form-control color-green-slider form-pl-fixer" type="range" step="1" min="0" max="255" />
+                <div class="col-8 col-sm-8">
+                    <input class="form-range color-red-slider" type="range" step="1" min="0" max="255">
                 </div>
             </div>
-            <div class="form-group">
-                <label class="col-sm-2 control-label">Blue</label>
-                <div class="col-sm-2">
-                    <input class="form-control color-blue-input" type="number" step="1" min="0" max="255" />
+            <div class="row mb-3 align-items-center">
+                <label class="col-sm-2 col-form-label">Green</label>
+                <div class="col-4 col-sm-2">
+                    <input class="form-control color-green-input" type="number" step="1" min="0" max="255">
                 </div>
-                <div class="col-sm-8">
-                    <input class="form-control color-blue-slider form-pl-fixer" type="range" step="1" min="0" max="255" />
+                <div class="col-8 col-sm-8">
+                    <input class="form-range color-green-slider" type="range" step="1" min="0" max="255">
                 </div>
             </div>
-        </div>
-        
-        <div id="stringTemplate" class="form-group">
-            <label class="col-sm-2 control-label"></label>
-            <div class="col-sm-10">
-                <input class="form-control input" />
+            <div class="row mb-3 align-items-center">
+                <label class="col-sm-2 col-form-label">Blue</label>
+                <div class="col-4 col-sm-2">
+                    <input class="form-control color-blue-input" type="number" step="1" min="0" max="255">
+                </div>
+                <div class="col-8 col-sm-8">
+                    <input class="form-range color-blue-slider" type="range" step="1" min="0" max="255">
+                </div>
             </div>
         </div>
 
-        <div id="labelTemplate" class="form-group">
-            <label class="col-sm-2 control-label"></label>
+        <div id="stringTemplate" class="row mb-3 align-items-center">
+            <label class="col-sm-2 col-form-label control-label"></label>
             <div class="col-sm-10">
-                <input class="form-control input" readonly />
+                <input class="form-control input">
+            </div>
+        </div>
+
+        <div id="labelTemplate" class="row mb-3 align-items-center">
+            <label class="col-sm-2 col-form-label control-label"></label>
+            <div class="col-sm-10">
+                <input class="form-control input" readonly>
             </div>
         </div>
     </div>
 
-    <nav class="navbar navbar-default navbar-fixed-bottom">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-2" aria-expanded="false">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-            </div>
-            <div class="collapse navbar-collapse" id="navbar-collapse-2">
-                <ul class="nav navbar-nav">
-                    <li>
-                        <a href="/" aria-label="Refresh" title="Refresh">
-              <span class="glyphicon glyphicon-refresh" id="btnRefresh"></span>
+    <nav class="navbar fixed-bottom navbar-dark bg-primary">
+        <div class="container justify-content-start">
+            <a class="nav-link text-white me-3" href="/" aria-label="Refresh" title="Refresh">
+                <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/></svg>
             </a>
-                    </li>
-                    <li>
-                        <p class="navbar-text" id="status">Loading, please wait...</p>
-                    </li>
-                </ul>
-            </div>
+            <span class="navbar-text" id="status">Loading, please wait...</span>
         </div>
     </nav>
 
     <!-- request js from the ESP8266 web server -->
-    <script src="js/jquery-3.1.1.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/minicolors.min.js"></script>
-    <script src="js/r-websocket.min.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/jquery.min.js?v=2"></script>
+    <script src="js/bootstrap.bundle.min.js?v=2"></script>
+    <script src="js/jquery.minicolors.min.js?v=2"></script>
+    <script src="js/r-websocket.min.js?v=2"></script>
+    <script src="js/app.js?v=2"></script>
 </body>
 </html>

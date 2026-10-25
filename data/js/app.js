@@ -2,10 +2,11 @@
 var address = location.hostname;
 var urlBase = "";
 
-// used when hosting the site somewhere other than the ESP8266 (handy for testing without waiting forever to upload to SPIFFS)
+// used when hosting the site somewhere other than the ESP8266 (handy for testing without waiting forever to upload to the file system)
 // var address = "esp8266-1920f7.local";
 // var urlBase = "http://" + address + "/";
 
+// One timer per field, so changing two controls quickly does not drop the first change
 var postColorTimer = {};
 var postValueTimer = {};
 
@@ -15,7 +16,7 @@ var ignoreColorChange = false;
 //var ws = new ReconnectingWebSocket('wss://' + address + ':81/', ['arduino']);
 
 var ws = new ReconnectingWebSocket('ws://' + address + ':81/', ['arduino']);
-ws.debug = true;
+ws.debug = false;
 
 ws.onmessage = function(evt) {
   if(evt.data != null)
@@ -61,8 +62,9 @@ $(document).ready(function() {
 
       $("#status").html("Ready");
     })
-    .fail(function(errorThrown) {
-      console.log("error: " + errorThrown);
+    .fail(function(jqXHR, textStatus) {
+      console.log("error: " + textStatus);
+      $("#status").html("Could not load settings from the controller, press refresh to try again");
     });
 });
 
@@ -94,7 +96,7 @@ function addNumberField(field) {
   input.val(field.value);
   slider.val(field.value);
 
-  slider.on("change mousemove", function() {
+  slider.on("input", function() {
     input.val($(this).val());
   });
 
@@ -134,8 +136,8 @@ function addBooleanField(field) {
   btnOn.attr("id", "btnOn" + field.name);
   btnOff.attr("id", "btnOff" + field.name);
 
-  btnOn.attr("class", field.value ? "btn btn-primary" : "btn btn-default");
-  btnOff.attr("class", !field.value ? "btn btn-primary" : "btn btn-default");
+  btnOn.attr("class", field.value ? "btn btn-primary" : "btn btn-outline-primary");
+  btnOff.attr("class", !field.value ? "btn btn-primary" : "btn btn-outline-primary");
 
   btnOn.click(function() {
     setBooleanFieldValue(field, btnOn, btnOff, 1)
@@ -152,14 +154,12 @@ function toggleColorSelector(pattern) {
     'Solid Color'
   ];
   if (patterns.indexOf(pattern) > -1) {
-    $('#colorPaletteTemplate').show();
+    $('#form-group-solidColor-palette').show();
     $('#form-group-solidColor').show();
-    $('#colorTemplate').show();
     $('#form-group-section-solidColor').hide();
   } else {
-    $('#colorPaletteTemplate').hide();
+    $('#form-group-solidColor-palette').hide();
     $('#form-group-solidColor').hide();
-    $('#colorTemplate').hide();
     $('#form-group-section-solidColor').hide();
   }
 }
@@ -307,7 +307,7 @@ function addSelectField(field) {
   label.attr("for", id);
   label.text(field.label);
 
-  var select = template.find(".form-control");
+  var select = template.find("select");
   select.attr("id", id);
 
   for (var i = 0; i < field.options.length; i++) {
@@ -460,15 +460,15 @@ function addColorFieldPicker(field) {
     blueInput.val(b);
   });
 
-  redSlider.on("change mousemove", function() {
+  redSlider.on("input", function() {
     redInput.val($(this).val());
   });
 
-  greenSlider.on("change mousemove", function() {
+  greenSlider.on("input", function() {
     greenInput.val($(this).val());
   });
 
-  blueSlider.on("change mousemove", function() {
+  blueSlider.on("input", function() {
     blueInput.val($(this).val());
   });
 
@@ -477,6 +477,9 @@ function addColorFieldPicker(field) {
 
     var value = $(this).val();
     var components = rgbToComponents(value);
+
+    // Picker was moved to a color received from the controller, do not send it back
+    if ($(this).data("serverValue") == components.r + "," + components.g + "," + components.b) return;
 
     redInput.val(components.r);
     greenInput.val(components.g);
@@ -499,6 +502,8 @@ function addColorFieldPicker(field) {
 
 function addColorFieldPalette(field) {
   var template = $("#colorPaletteTemplate").clone();
+
+  template.attr("id", "form-group-" + field.name + "-palette");
 
   var buttons = template.find(".btn-color");
 
@@ -569,34 +574,51 @@ function addStringField(field, readonly) {
 }
 
 function updateFieldValue(name, value) {
+  // Controller broadcasts solid color changes as "color"
+  if (name == "color") {
+    name = "solidColor";
+  }
+
   var group = $("#form-group-" + name);
 
   var type = group.attr("data-field-type");
 
   if (type == "Number") {
-    var input = group.find(".form-control");
-    input.val(value);
+    group.find(".input, .slider").val(value);
   } else if (type == "Boolean") {
     var btnOn = group.find("#btnOn" + name);
     var btnOff = group.find("#btnOff" + name);
 
-    btnOn.attr("class", value ? "btn btn-primary" : "btn btn-default");
-    btnOff.attr("class", !value ? "btn btn-primary" : "btn btn-default");
+    btnOn.attr("class", value ? "btn btn-primary" : "btn btn-outline-primary");
+    btnOff.attr("class", !value ? "btn btn-primary" : "btn btn-outline-primary");
 
   } else if (type == "Select") {
-    var select = group.find(".form-control");
+    var select = group.find("select");
     select.val(value);
+
+    if (name == "pattern") {
+      toggleSections(select.find("option:selected").text());
+    }
   } else if (type == "Color") {
-    var input = group.find(".form-control");
-    input.val("rgb(" + value + ")");
+    var components = rgbToComponents("rgb(" + value + ")");
+    var id = "#input-" + name;
+
+    $(id).data("serverValue", value);
+    $(id).minicolors("value", "rgb(" + value + ")");
+    $(id + "-red").val(components.r);
+    $(id + "-green").val(components.g);
+    $(id + "-blue").val(components.b);
+    $(id + "-red-slider").val(components.r);
+    $(id + "-green-slider").val(components.g);
+    $(id + "-blue-slider").val(components.b);
   }
-};
+}
 
 function setBooleanFieldValue(field, btnOn, btnOff, value) {
   field.value = value;
 
-  btnOn.attr("class", field.value ? "btn btn-primary" : "btn btn-default");
-  btnOff.attr("class", !field.value ? "btn btn-primary" : "btn btn-default");
+  btnOn.attr("class", field.value ? "btn btn-primary" : "btn btn-outline-primary");
+  btnOff.attr("class", !field.value ? "btn btn-primary" : "btn btn-outline-primary");
 
   postValue(field.name, field.value);
 }
@@ -606,18 +628,19 @@ function postValue(name, value) {
 
   var body = { name: name, value: value };
 
-  $.post(urlBase + name + "?value=" + value, body, function(data) {
+  $.post(urlBase + name + "?value=" + encodeURIComponent(value), body, function(data) {
     if (data.name != null) {
       $("#status").html("Set " + name + ": " + data.name);
     } else {
       $("#status").html("Set " + name + ": " + data);
     }
-  });
+  })
+  .fail(function(jqXHR, textStatus) { $("#status").html("Fail: " + name + " " + textStatus); });
 }
 
 function delayPostValue(name, value) {
-  clearTimeout(postValueTimer);
-  postValueTimer = setTimeout(function() {
+  clearTimeout(postValueTimer[name]);
+  postValueTimer[name] = setTimeout(function() {
     postValue(name, value);
   }, 300);
 }
@@ -630,12 +653,12 @@ function postColor(name, value) {
   $.post(urlBase + name + "?r=" + value.r + "&g=" + value.g + "&b=" + value.b, body, function(data) {
     $("#status").html("Set " + name + ": " + data);
   })
-  .fail(function(textStatus, errorThrown) { $("#status").html("Fail: " + textStatus + " " + errorThrown); });
+  .fail(function(jqXHR, textStatus) { $("#status").html("Fail: " + name + " " + textStatus); });
 }
 
 function delayPostColor(name, value) {
-  clearTimeout(postColorTimer);
-  postColorTimer = setTimeout(function() {
+  clearTimeout(postColorTimer[name]);
+  postColorTimer[name] = setTimeout(function() {
     postColor(name, value);
   }, 300);
 }

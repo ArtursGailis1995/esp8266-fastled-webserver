@@ -21,7 +21,9 @@
 #define FASTLED_INTERRUPT_RETRY_COUNT 0
 
 #include <FastLED.h>
+#ifdef FASTLED_USING_NAMESPACE
 FASTLED_USING_NAMESPACE
+#endif
 
 extern "C" {
 #include "user_interface.h"
@@ -35,10 +37,24 @@ extern "C" {
 #include <WiFiManager.h>
 #include <WebSocketsServer.h>
 #include <FS.h>
+#include <LittleFS.h>
 #include <EEPROM.h>
 #include <ArduinoOTA.h>
 
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
+
+// Admin credentials for the firmware update page, the file editor, Wi-Fi reset and Arduino OTA uploads.
+// Copy 'secrets.example.h' to 'secrets.h' and set your own values there, 'secrets.h' is not committed to git.
+#if __has_include("secrets.h")
+#include "secrets.h"
+#else
+#warning "secrets.h not found, using default admin credentials. Copy secrets.example.h to secrets.h and change them!"
+#define ADMIN_USER      "admin"
+#define ADMIN_PASSWORD  "changeme"
+#endif
+
+// Settings are written to flash only after they stop changing for this long (protects flash from wear)
+#define SETTINGS_SAVE_DELAY_MS 3000
 
 WiFiManager wifiManager;
 ESP8266WebServer webServer(80);
@@ -52,7 +68,7 @@ WebSocketsServer webSocketsServer = WebSocketsServer(81);
 #include "FSBrowser.h"
 
 // LED STRIP PARAMETERS
-#define DATA_PIN      D4
+#define DATA_PIN      D2
 #define LED_TYPE      WS2812B
 #define COLOR_ORDER   GRB
 #define NUM_LEDS      300
@@ -74,7 +90,7 @@ uint8_t secondsPerPalette = 10;
 uint8_t cooling = 50;
 uint8_t sparking = 60;
 uint8_t speed = 30;
-extern const TProgmemRGBGradientPalettePtr gGradientPalettes[];
+extern const TProgmemRGBGradientPaletteRef gGradientPalettes[];
 uint8_t gCurrentPaletteNumber = 0;
 uint8_t currentGradientPaletteIndex = 0;
 CRGBPalette16 gCurrentPalette( CRGB::Black);
@@ -83,7 +99,7 @@ CRGBPalette16 IceColors_p = CRGBPalette16(CRGB::Black, CRGB::Blue, CRGB::Aqua, C
 uint8_t currentPatternIndex = 0; // Index number of which pattern is current
 uint8_t autoplay = 0;
 uint8_t autoplayDuration = 60;
-unsigned long autoPlayTimeout = 0;
+unsigned long autoPlayLastSwitch = 0;
 uint8_t currentPaletteIndex = 0;
 uint8_t gHue = 0;
 int meteorCounter = 0;
@@ -279,18 +295,16 @@ void setup() {
   Serial.println();
 
   // Initialize file system and print its contents to console
-  SPIFFS.begin();
-  {
-    Serial.println("SPIFFS contents:");
+  if (!LittleFS.begin()) {
+    Serial.println("LittleFS mount failed! Upload the 'data' folder as a LittleFS image.");
+  }
+  else {
+    Serial.println("LittleFS contents:");
 
-    Dir dir = SPIFFS.openDir("/");
-    
-    while (dir.next()) {
-      String fileName = dir.fileName();
-      size_t fileSize = dir.fileSize();
-      Serial.printf("FS File: %s, size: %s\n", fileName.c_str(), String(fileSize).c_str());
-    }
-    
+    forEachFile("/", [](const String& path, size_t size) {
+      Serial.printf("FS File: %s, size: %u\n", path.c_str(), size);
+    });
+
     Serial.printf("\n");
   }
 
@@ -333,20 +347,27 @@ void setup() {
   ///////////////////// WEB SERVER RELATED STUFF /////////////////////
   ////////////////////////////////////////////////////////////////////
 
-  httpUpdateServer.setup(&webServer);
+  if (String(ADMIN_PASSWORD) == "changeme") {
+    Serial.println("WARNING: default admin password in use, set ADMIN_PASSWORD in secrets.h!");
+  }
+
+  httpUpdateServer.setup(&webServer, ADMIN_USER, ADMIN_PASSWORD);
 
   ArduinoOTA.setHostname(nameChar);
-  
+  ArduinoOTA.setPassword(ADMIN_PASSWORD);
+
   ArduinoOTA.onStart([]() {
     String type;
-    
+
     if (ArduinoOTA.getCommand() == U_FLASH) {
       type = "sketch";
     } else {
       type = "filesystem";
     }
 
-    SPIFFS.end();
+    // Do not lose pending settings when the board reboots after the update
+    saveSettingsIfChanged(true);
+    LittleFS.end();
     Serial.println("Starting OTA update: " + type);
   });
   
@@ -382,14 +403,14 @@ void setup() {
   webServer.on("/all", HTTP_GET, []() {
     String json = getFieldsJson(fields, fieldCount);
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
-    webServer.send(200, "text/json", json);
+    webServer.send(200, "application/json", json);
   });
 
   webServer.on("/fieldValue", HTTP_GET, []() {
     String name = webServer.arg("name");
     String value = getFieldValue(name, fields, fieldCount);
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
-    webServer.send(200, "text/json", value);
+    webServer.send(200, "text/plain", value);
   });
 
   webServer.on("/fieldValue", HTTP_POST, []() {
@@ -397,7 +418,7 @@ void setup() {
     String value = webServer.arg("value");
     String newValue = setFieldValue(name, value, fields, fieldCount);
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
-    webServer.send(200, "text/json", newValue);
+    webServer.send(200, "text/plain", newValue);
   });
 
   webServer.on("/power", HTTP_POST, []() {
@@ -408,121 +429,56 @@ void setup() {
   });
 
   webServer.on("/cooling", HTTP_POST, []() {
-    String value = webServer.arg("value");
-    cooling = value.toInt();
-
-    if (cooling < 1) {
-      cooling = 1;
-    }
-    else if (cooling > 255) {
-      cooling = 255;
-    }
-
-    setCooling(cooling);
+    setCooling(argInRange("value", 1, 255));
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(cooling);
   });
 
   webServer.on("/sparking", HTTP_POST, []() {
-    String value = webServer.arg("value");
-    sparking = value.toInt();
-
-    if (sparking < 1) {
-      sparking = 1;
-    }
-    else if (sparking > 255) {
-      sparking = 255;
-    }
-
-    setSparking(sparking);
+    setSparking(argInRange("value", 1, 255));
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(sparking);
   });
 
   webServer.on("/speed", HTTP_POST, []() {
-    String value = webServer.arg("value");
-    speed = value.toInt();
+    speed = argInRange("value", 1, 255);
     broadcastInt("speed", speed);
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(speed);
   });
 
   webServer.on("/twinkleSpeed", HTTP_POST, []() {
-    String value = webServer.arg("value");
-    twinkleSpeed = value.toInt();
-    
-    if (twinkleSpeed < 2) {
-      twinkleSpeed = 2;
-    }
-    else if (twinkleSpeed > 7) {
-      twinkleSpeed = 7;
-    }
-    
-    setTwinkleSpeed(twinkleSpeed);
+    setTwinkleSpeed(argInRange("value", 2, 7));
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(twinkleSpeed);
   });
 
   webServer.on("/twinkleDensity", HTTP_POST, []() {
-    String value = webServer.arg("value");
-    twinkleDensity = value.toInt();
-    
-    if (twinkleDensity < 1) {
-      twinkleDensity = 1;
-    }
-    else if (twinkleDensity > 8) {
-      twinkleDensity = 8;
-    }
-    
-    setTwinkleDensity(twinkleDensity);
+    setTwinkleDensity(argInRange("value", 1, 8));
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(twinkleDensity);
   });
 
   webServer.on("/fadeInSpeed", HTTP_POST, []() {
-    String value = webServer.arg("value");
-    fadeInSpeed = value.toInt();
-    
-    if (fadeInSpeed < 16) {
-      fadeInSpeed = 16;
-    }
-    else if (fadeInSpeed > 128) {
-      fadeInSpeed = 128;
-    }
-    
-    setFadeInSpeed(fadeInSpeed);
+    setFadeInSpeed(argInRange("value", 16, 128));
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(fadeInSpeed);
   });
 
   webServer.on("/fadeOutSpeed", HTTP_POST, []() {
-    String value = webServer.arg("value");
-    fadeOutSpeed = value.toInt();
-    
-    if (fadeOutSpeed < 16) {
-      fadeOutSpeed = 16;
-    }
-    else if (fadeOutSpeed > 128) {
-      fadeOutSpeed = 128;
-    }
-    
-    setFadeOutSpeed(fadeOutSpeed);
+    setFadeOutSpeed(argInRange("value", 16, 128));
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(fadeOutSpeed);
   });
 
   webServer.on("/solidColor", HTTP_POST, []() {
-    String r = webServer.arg("r");
-    String g = webServer.arg("g");
-    String b = webServer.arg("b");
-    setSolidColor(r.toInt(), g.toInt(), b.toInt());
+    setSolidColor(argInRange("r", 0, 255), argInRange("g", 0, 255), argInRange("b", 0, 255));
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendString(String(solidColor.r) + "," + String(solidColor.g) + "," + String(solidColor.b));
   });
 
   webServer.on("/pattern", HTTP_POST, []() {
-    String value = webServer.arg("value");
-    setPattern(value.toInt());
+    setPattern(argInRange("value", 0, patternCount - 1));
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(currentPatternIndex);
   });
@@ -535,8 +491,7 @@ void setup() {
   });
 
   webServer.on("/palette", HTTP_POST, []() {
-    String value = webServer.arg("value");
-    setPalette(value.toInt());
+    setPalette(argInRange("value", 0, paletteCount - 1));
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(currentPaletteIndex);
   });
@@ -549,8 +504,7 @@ void setup() {
   });
 
   webServer.on("/gradientPalette", HTTP_POST, []() {
-    String value = webServer.arg("value");
-    setGradientPalette(value.toInt());
+    setGradientPalette(argInRange("value", 0, gGradientPaletteCount - 1));
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(currentGradientPaletteIndex);
   });
@@ -563,22 +517,19 @@ void setup() {
   });
 
   webServer.on("/brightness", HTTP_POST, []() {
-    String value = webServer.arg("value");
-    setBrightness(value.toInt());
+    setBrightness(argInRange("value", 1, 255));
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(brightness);
   });
 
   webServer.on("/autoplay", HTTP_POST, []() {
-    String value = webServer.arg("value");
-    setAutoplay(value.toInt());
+    setAutoplay(argInRange("value", 0, 1));
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(autoplay);
   });
 
   webServer.on("/autoplayDuration", HTTP_POST, []() {
-    String value = webServer.arg("value");
-    setAutoplayDuration(value.toInt());
+    setAutoplayDuration(argInRange("value", 3, 250));
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(autoplayDuration);
   });
@@ -590,49 +541,86 @@ void setup() {
   });
 
   webServer.on("/disconnectNetwork", HTTP_POST, []() {
+    if (!requireAdmin()) {
+      return;
+    }
+
     String value = webServer.arg("resetNetwork");
 
     if(value == "1") {
-      webServer.sendHeader("Access-Control-Allow-Origin", "*");
       webServer.send(200, "text/plain", "Success!");
       delay(500);
       Serial.println("Erase settings and restart ...");
+      saveSettingsIfChanged(true);
       wifiManager.resetSettings();
       delay(500);
-      ESP.restart(); 
+      ESP.restart();
     }
     else {
       Serial.print("Cancelling Wi-Fi setting reset, reason: ");
       Serial.println(value);
-      webServer.sendHeader("Access-Control-Allow-Origin", "*");
       webServer.send(200, "text/plain", "Task cancelled!");
     }
   });
 
   // List directory contents
-  webServer.on("/list", HTTP_GET, handleFileList);
-  
-  // Load SPIFFS editor
+  webServer.on("/list", HTTP_GET, []() {
+    if (requireAdmin()) {
+      handleFileList();
+    }
+  });
+
+  // Load file system editor
   webServer.on("/edit", HTTP_GET, []() {
+    if (!requireAdmin()) {
+      return;
+    }
+
     if (!handleFileRead("/edit.htm")) {
-      webServer.sendHeader("Access-Control-Allow-Origin", "*");
       webServer.send(404, "text/plain", "FileNotFound");
     }
   });
-  
+
   // Create file
-  webServer.on("/edit", HTTP_PUT, handleFileCreate);
-  
+  webServer.on("/edit", HTTP_PUT, []() {
+    if (requireAdmin()) {
+      handleFileCreate();
+    }
+  });
+
   // Delete file
-  webServer.on("/edit", HTTP_DELETE, handleFileDelete);
+  webServer.on("/edit", HTTP_DELETE, []() {
+    if (requireAdmin()) {
+      handleFileDelete();
+    }
+  });
 
-  // Handle uploads in editor
+  // Handle uploads in editor. Upload chunks arrive before the final handler runs,
+  // so the upload handler checks credentials itself
   webServer.on("/edit", HTTP_POST, []() {
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
-    webServer.send(200, "text/plain", "");
-  }, handleFileUpload);
+    if (requireAdmin()) {
+      webServer.send(200, "text/plain", "");
+    }
+  }, []() {
+    if (webServer.authenticate(ADMIN_USER, ADMIN_PASSWORD)) {
+      handleFileUpload();
+    }
+  });
 
-  webServer.serveStatic("/", SPIFFS, "/", "max-age=86400");
+  // Admin pages ask for credentials when opened, so their forms and requests are already authenticated
+  webServer.on("/update.htm", HTTP_GET, []() {
+    if (requireAdmin() && !handleFileRead("/update.htm")) {
+      webServer.send(404, "text/plain", "FileNotFound");
+    }
+  });
+
+  webServer.on("/edit.htm", HTTP_GET, []() {
+    if (requireAdmin() && !handleFileRead("/edit.htm")) {
+      webServer.send(404, "text/plain", "FileNotFound");
+    }
+  });
+
+  webServer.serveStatic("/", LittleFS, "/", "max-age=86400");
 
   // Start mDNS
   MDNS.begin(nameChar);
@@ -647,7 +635,7 @@ void setup() {
   webSocketsServer.onEvent(webSocketEvent);
   Serial.println("Web socket server started");
 
-  autoPlayTimeout = millis() + (autoplayDuration * 1000);
+  autoPlayLastSwitch = millis();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -676,6 +664,21 @@ void broadcastString(String name, String value) {
   webSocketsServer.broadcastTXT(json);
 }
 
+// Read numeric request argument and clamp it before it is narrowed to uint8_t
+int argInRange(const String& name, int lowest, int highest) {
+  return constrain(webServer.arg(name).toInt(), lowest, highest);
+}
+
+// Ask browser for admin credentials, returns true when they are correct
+bool requireAdmin() {
+  if (!webServer.authenticate(ADMIN_USER, ADMIN_PASSWORD)) {
+    webServer.requestAuthentication();
+    return false;
+  }
+
+  return true;
+}
+
 //////////////////////////////////////////////////////////////////////////
 /////////////////////// MAIN LOOP ////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -695,14 +698,9 @@ void loop() {
   webServer.handleClient();
   MDNS.update();
 
-  // Set color to black if power is turned off
-  if (power == 0) {
-    fill_solid(leds, NUM_LEDS, CRGB::Black);
-    FastLED.show();
-    return;
-  }
+  saveSettingsIfChanged(false);
 
-  // Check if Wi-Fi is connected and attempt reconnect if it is not
+  // Check if Wi-Fi is connected and restart mDNS after (re)connect
   EVERY_N_SECONDS(1) {
     if (WiFi.status() != WL_CONNECTED) {
       hasConnected = false;
@@ -711,14 +709,20 @@ void loop() {
       hasConnected = true;
       MDNS.begin(nameString);
       MDNS.setHostname(nameString);
-      webServer.begin();
-      Serial.println("HTTP web server started");
       Serial.print("Connected! Open http://");
       Serial.print(WiFi.localIP());
       Serial.print(" or http://");
       Serial.print(nameString);
       Serial.println(".local in your browser");
     }
+  }
+
+  // Keep LED strip black if power is turned off, without busy-looping
+  if (power == 0) {
+    fill_solid(leds, NUM_LEDS, CRGB::Black);
+    FastLED.show();
+    delay(20);
+    return;
   }
 
   // Change to a new cpt-city gradient palette
@@ -734,9 +738,9 @@ void loop() {
   }
 
   // Switch pattern if autoplay mode is active
-  if (autoplay && (millis() > autoPlayTimeout)) {
+  if (autoplay && (millis() - autoPlayLastSwitch >= autoplayDuration * 1000UL)) {
     adjustPattern(true);
-    autoPlayTimeout = millis() + (autoplayDuration * 1000);
+    autoPlayLastSwitch = millis();
   }
 
   // Call the current pattern function once, updating the 'leds' array
@@ -801,7 +805,6 @@ String getWiFiJson() {
   String json = "{";
   json += "\"status\":\"" + String(WiFi.status()) + "\"";
   json += ",\"ssid\":\"" + WiFi.SSID() + "\"";
-  json += ",\"password\":\"" + String(WiFi.psk()) + "\"";
   json += ",\"channel\":\"" + String(WiFi.channel()) + "\"";
   json += ",\"rssi\":\"" + String(WiFi.RSSI()) + "\"";
   json += ",\"bssid\":\"" + WiFi.BSSIDstr() + "\"";
@@ -833,10 +836,7 @@ void loadSettings() {
   brightness = EEPROM.read(0);
 
   currentPatternIndex = EEPROM.read(1);
-  if (currentPatternIndex < 0) {
-    currentPatternIndex = 0;
-  }
-  else if (currentPatternIndex >= patternCount) {
+  if (currentPatternIndex >= patternCount) {
     currentPatternIndex = 0; //Load 'Dynamic Rainbow' effect if out of bounds
   }
   
@@ -860,18 +860,12 @@ void loadSettings() {
   }
 
   currentPaletteIndex = EEPROM.read(8);
-  if (currentPaletteIndex < 0) {
-    currentPaletteIndex = 0;
-  }
-  else if (currentPaletteIndex >= paletteCount) {
+  if (currentPaletteIndex >= paletteCount) {
     currentPaletteIndex = 0; //Load 'Rainbow' palette if out of bounds
   }
 
   currentGradientPaletteIndex = EEPROM.read(9);
-  if (currentGradientPaletteIndex < 0) {
-    currentGradientPaletteIndex = 0;
-  }
-  else if (currentGradientPaletteIndex >= gGradientPaletteCount) {
+  if (currentGradientPaletteIndex >= gGradientPaletteCount) {
     currentGradientPaletteIndex = 0; //Load 'Sunset' gradient if out of bounds
   }
 
@@ -911,16 +905,10 @@ void loadSettings() {
   if (cooling < 1) {
     cooling = 1;
   }
-  else if (cooling > 255) {
-    cooling = 255; //Set 'Cooling' to 255 if out of bounds
-  }
 
   sparking = EEPROM.read(15);
   if (sparking < 1) {
     sparking = 1;
-  }
-  else if (sparking > 255) {
-    sparking = 255; //Set 'Sparking' to 255 if out of bounds
   }
 }
 
@@ -950,44 +938,46 @@ void writeAndCommitSettings() {
   EEPROM.commit();
 }
 
+bool settingsChanged = false;
+unsigned long settingsChangedAt = 0;
+
+// Remember that settings changed, they are saved later by saveSettingsIfChanged()
+void markSettingsChanged() {
+  settingsChanged = true;
+  settingsChangedAt = millis();
+}
+
+// Commit changed settings once they have been stable for SETTINGS_SAVE_DELAY_MS, or right away when forced
+void saveSettingsIfChanged(bool force) {
+  if (settingsChanged && (force || millis() - settingsChangedAt >= SETTINGS_SAVE_DELAY_MS)) {
+    settingsChanged = false;
+    writeAndCommitSettings();
+  }
+}
+
 // Set brightness, write to EEPROM
 void setBrightness(uint8_t value) {
-  if (value > 255) {
-    value = 255;
-  }
-  else if (value < 0) {
-    value = 0;
-  }
-
   brightness = value;
 
   FastLED.setBrightness(brightness);
 
-  writeAndCommitSettings();
+  markSettingsChanged();
   broadcastInt("brightness", brightness);
 }
 
 // Increase or decrease the current pattern number, and wrap around at the ends
 void adjustPattern(bool up) {
+  // Wrap around at the ends
   if (up) {
-    currentPatternIndex++;
+    currentPatternIndex = (currentPatternIndex + 1) % patternCount;
   }
   else {
-    currentPatternIndex--;
-  }
-  
-  // Wrap around at the ends
-  if (currentPatternIndex < 0) {
-    currentPatternIndex = patternCount - 1;
-  }
-  
-  if (currentPatternIndex >= patternCount) {
-    currentPatternIndex = 0;
+    currentPatternIndex = (currentPatternIndex + patternCount - 1) % patternCount;
   }
 
   // Write to EEPROM if autoplay is not active. Saving every pattern change will wear EEPROM!
   if (autoplay == 0) {
-    writeAndCommitSettings();
+    markSettingsChanged();
   }
 
   broadcastInt("pattern", currentPatternIndex);
@@ -1003,7 +993,7 @@ void setPattern(uint8_t value) {
 
   // Write to EEPROM if autoplay is not active. Saving every pattern change will wear EEPROM!
   if (autoplay == 0) {
-    writeAndCommitSettings();
+    markSettingsChanged();
   }
 
   broadcastInt("pattern", currentPatternIndex);
@@ -1028,7 +1018,7 @@ void setSolidColor(CRGB color) {
 void setSolidColor(uint8_t r, uint8_t g, uint8_t b) {
   solidColor = CRGB(r, g, b);
 
-  writeAndCommitSettings();
+  markSettingsChanged();
 
   // Switch to solod color mode
   setPattern(patternCount - 1);
@@ -1040,7 +1030,7 @@ void setSolidColor(uint8_t r, uint8_t g, uint8_t b) {
 void setPower(uint8_t value) {
   power = value == 0 ? 0 : 1;
 
-  writeAndCommitSettings();
+  markSettingsChanged();
 
   broadcastInt("power", power);
 }
@@ -1049,7 +1039,7 @@ void setPower(uint8_t value) {
 void setAutoplay(uint8_t value) {
   autoplay = value == 0 ? 0 : 1;
 
-  writeAndCommitSettings();
+  markSettingsChanged();
 
   broadcastInt("autoplay", autoplay);
 }
@@ -1065,9 +1055,9 @@ void setAutoplayDuration(uint8_t value) {
 
   autoplayDuration = value;
 
-  writeAndCommitSettings();
+  markSettingsChanged();
 
-  autoPlayTimeout = millis() + (autoplayDuration * 1000);
+  autoPlayLastSwitch = millis();
 
   broadcastInt("autoplayDuration", autoplayDuration);
 }
@@ -1080,7 +1070,7 @@ void setPalette(uint8_t value) {
 
   currentPaletteIndex = value;
 
-  writeAndCommitSettings();
+  markSettingsChanged();
 
   broadcastInt("palette", currentPaletteIndex);
 }
@@ -1103,7 +1093,7 @@ void setGradientPalette(uint8_t value) {
   
   currentGradientPaletteIndex = value;
 
-  writeAndCommitSettings();
+  markSettingsChanged();
 
   broadcastInt("gradientPalette", currentGradientPaletteIndex);
 }
@@ -1118,11 +1108,11 @@ void setGradientPaletteName(String name) {
   }
 }
 
-// Set fade-in speed, write to EEPROM
+// Set fade-in speed, save to EEPROM
 void setFadeInSpeed(uint8_t value) {
   fadeInSpeed = value;
 
-  writeAndCommitSettings();
+  markSettingsChanged();
 
   broadcastInt("fadeInSpeed", fadeInSpeed);
 }
@@ -1131,7 +1121,7 @@ void setFadeInSpeed(uint8_t value) {
 void setFadeOutSpeed(uint8_t value) {
   fadeOutSpeed = value;
 
-  writeAndCommitSettings();
+  markSettingsChanged();
 
   broadcastInt("fadeOutSpeed", fadeOutSpeed);
 }
@@ -1140,7 +1130,7 @@ void setFadeOutSpeed(uint8_t value) {
 void setTwinkleSpeed(uint8_t value) {
   twinkleSpeed = value;
 
-  writeAndCommitSettings();
+  markSettingsChanged();
 
   broadcastInt("twinkleSpeed", twinkleSpeed);
 }
@@ -1149,7 +1139,7 @@ void setTwinkleSpeed(uint8_t value) {
 void setTwinkleDensity(uint8_t value) {
   twinkleDensity = value;
 
-  writeAndCommitSettings();
+  markSettingsChanged();
 
   broadcastInt("twinkleDensity", twinkleDensity);
 }
@@ -1157,7 +1147,7 @@ void setTwinkleDensity(uint8_t value) {
 void setCooling(uint8_t value) {
   cooling = value;
 
-  writeAndCommitSettings();
+  markSettingsChanged();
 
   broadcastInt("cooling", cooling);
 }
@@ -1165,7 +1155,7 @@ void setCooling(uint8_t value) {
 void setSparking(uint8_t value) {
   sparking = value;
 
-  writeAndCommitSettings();
+  markSettingsChanged();
 
   broadcastInt("sparking", sparking);
 }
@@ -1213,7 +1203,7 @@ void sparkles() {
 // A colored dot sweeping back and forth, with fading trails
 void sinelon() {
   fadeToBlackBy( leds, NUM_LEDS, 20); // Change '20' to 'cooling' to control trail length with 'Cooling' slider
-  int pos = beatsin16(speed, 0, NUM_LEDS);
+  int pos = beatsin16(speed, 0, NUM_LEDS - 1);
   static int prevpos = 0;
   CRGB color = ColorFromPalette(palettes[currentPaletteIndex], gHue, 255);
   
@@ -1267,7 +1257,7 @@ void juggle() {
   fadeToBlackBy(leds, NUM_LEDS, faderate);
   
   for ( int i = 0; i < numdots; i++) {
-    leds[beatsin16(basebeat + i + numdots, 0, NUM_LEDS)] += CHSV(gHue + curhue, thissat, thisbright);
+    leds[beatsin16(basebeat + i + numdots, 0, NUM_LEDS - 1)] += CHSV(gHue + curhue, thissat, thisbright);
     curhue += hueinc;
   }
 }
@@ -1385,7 +1375,7 @@ void addGlitter( uint8_t chanceOfGlitter) {
 }
 
 // Forward declarations of an array of cpt-city gradient palettes, and a count of how many there are.
-extern const TProgmemRGBGradientPalettePtr gGradientPalettes[];
+extern const TProgmemRGBGradientPaletteRef gGradientPalettes[];
 extern const uint8_t gGradientPaletteCount;
 
 uint8_t beatsaw8( accum88 beats_per_minute, uint8_t lowest = 0, uint8_t highest = 255, uint32_t timebase = 0, uint8_t phase_offset = 0) {

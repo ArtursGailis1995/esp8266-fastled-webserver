@@ -1,72 +1,69 @@
-body {
+/* Room for the status bar fixed to the bottom of the page */
+.has-bottom-bar {
   padding-bottom : 70px;
 }
 
+/* Inline SVG icons, sized like text */
+.icon {
+  width : 1em;
+  height : 1em;
+  fill : currentColor;
+  vertical-align : -0.125em;
+}
+
+/* Grey info box used for instructions */
+.well {
+  padding : 1rem;
+  margin-bottom : 1rem;
+  background-color : var(--bs-tertiary-bg);
+  border : 1px solid var(--bs-border-color);
+  border-radius : var(--bs-border-radius);
+}
+
+.well p:last-child {
+  margin-bottom : 0;
+}
+
+.well pre {
+  white-space : pre-wrap;
+  word-break : break-all;
+}
+
+.well code {
+  overflow-wrap : anywhere;
+}
+
+/* Preset color buttons on the main page */
+.btn-color {
+  height : 34px;
+  border : 1px solid rgba(0, 0, 0, .15) !important;
+}
+
+/* Simple mode color grid, 25 colors per row */
 .grid-item-color {
-  width : 4%;
+  flex : 0 0 4%;
   height : 32px;
   cursor : pointer;
 }
 
+.grid-item-color.selected {
+  outline : 2px solid #000;
+  outline-offset : -2px;
+}
+
+/* Simple mode pattern buttons */
 .grid-item-pattern {
   width : 100px;
   height : 100px;
-  margin : 5px;
   padding : 6px;
   white-space : normal;
-  cursor : pointer;
 }
 
-.grid-pattern-brightness {
-  height : auto !important ;
+.minicolors-theme-bootstrap .minicolors-input {
+  width : 100%;
 }
 
-.badgebox {
-  opacity : 0;
-}
-
-.badgebox + .badge {
-  text-indent : -999999px;
-  width : 27px;
-}
-
-.badgebox:focus + .badge {
-  box-shadow : 0 0 5px inset;
-}
-
-.badgebox:checked + .badge {
-  text-indent : 0;
-}
-
-.btn-success {
-  margin-right : 5px;
-}
-
-.form-pl-fixer {
-  padding: 0 !important;
-  border: none !important;
-}
-
-@media only screen and (max-width: 992px) {
-  .form-btn-fixer {
-    padding-right: 0 !important;
-  }
-  
-  .navbar-brand {
-    display: none !important;
-  }
-  
-  .navbar-right {
-    display: none !important;
-  }
-}
-
-@media only screen and (max-width: 768px) {
-  .navbar-brand {
-    display: block !important;
-  }
-  
-  .navbar-right {
-    display: block !important;
-  }
+/* GitHub logo is black, make it visible on the dark navigation bar */
+.navbar-dark img[alt="GitHub"] {
+  filter : invert(1);
 }

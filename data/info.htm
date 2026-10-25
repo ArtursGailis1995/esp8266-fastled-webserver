@@ -3,66 +3,33 @@
 
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Information - LED controller</title>
     <!-- request CSS from the ESP8266 web server -->
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css?v=2">
+    <link rel="stylesheet" href="css/style.css?v=2">
     <link rel="icon" href="images/rgb.png">
-    <script type="text/javascript">
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                var wlanFactory = JSON.parse(this.responseText);
-                document.getElementById("WiFistatus").innerHTML = wlanFactory.status;
-                document.getElementById("WiFissid").innerHTML = wlanFactory.ssid;
-                document.getElementById("WiFipassword").innerHTML = wlanFactory.password;
-                document.getElementById("WiFichannel").innerHTML = wlanFactory.channel;
-                document.getElementById("WiFirssi").innerHTML = wlanFactory.rssi;
-                document.getElementById("WiFibssid").innerHTML = wlanFactory.bssid;
-                document.getElementById("WiFimac").innerHTML = wlanFactory.mac;
-                document.getElementById("WiFilocalIP").innerHTML = wlanFactory.localIP;
-                document.getElementById("WiFinetmask").innerHTML = wlanFactory.netmask;
-                document.getElementById("WiFigateway").innerHTML = wlanFactory.gateway;
-                document.getElementById("WiFihostname").innerHTML = wlanFactory.hostname;
-                document.getElementById("WiFidns1").innerHTML = wlanFactory.dns1;
-                document.getElementById("WiFidns2").innerHTML = wlanFactory.dns2;
-                document.getElementById("WiFisoftAPIP").innerHTML = wlanFactory.softAPIP;
-            }
-        };
-
-        xmlhttp.open("GET", "/wifi", true);
-        xmlhttp.send();
-    </script>
 </head>
 
 <body>
-    <nav class="navbar navbar-default navbar-static-top" id="top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-3">
         <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-                <a class="navbar-brand" href="/"><img src="images/rgb.png" alt="LOGO" style="width: 24px; height: 24px;" /></a>
-            </div>
-            <div class="collapse navbar-collapse" id="navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                    <li><a href="/">LED controller<span class="sr-only">(current)</span></a></li>
-                    <li><a href="/simple.htm" title="Simple mode">Simple mode</a></li>
-                    <li><a href="/multi.htm" title="Discovery & Sync">Discovery & Sync</a></li>
-                    <li><a href="/edit.htm" title="Filesystem editor">Filesystem editor</a></li>
-                    <li><a href="/update.htm" title="Firmware update">Firmware & Wi-Fi</a></li>
-                    <li class="active"><a href="/info.htm" title="Information">Information</a></li>
+            <a class="navbar-brand" href="/"><img src="/images/rgb.png" alt="Home" width="24" height="24"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">LED controller</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/simple.htm">Simple mode</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/multi.htm">Discovery & Sync</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/edit.htm">Filesystem editor</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/update.htm">Firmware & Wi-Fi</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="/info.htm">Information</a></li>
                 </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a href="https://github.com/ArtursGailis1995/esp8266-fastled-webserver">
-              <img style="height: 16px;" src="images/github.ico" alt="GIT"/>
-            </a>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/ArtursGailis1995/esp8266-fastled-webserver" title="GitHub"><img src="/images/github.ico" alt="GitHub" height="16"></a>
                     </li>
                 </ul>
             </div>
@@ -70,12 +37,10 @@
     </nav>
 
     <div id="container" class="container">
-        <div class="panel panel-success">
-            <div class="panel-heading">
-                <h3 class="panel-title">Current Wi-Fi settings</h3>
-            </div>
-            <div class="panel-body">
-                <table class="table table-sm table-bordered table-striped">
+        <div class="card mb-3">
+            <div class="card-header text-bg-success">Current Wi-Fi settings</div>
+            <div class="card-body">
+                <table class="table table-sm table-bordered table-striped mb-0">
                     <thead>
                         <tr>
                             <th>Parameter</th>
@@ -85,15 +50,11 @@
                     <tbody>
                         <tr>
                             <td>Connection status</td>
-                            <td id="WiFistatus"></td>
+                            <td id="WiFistatus">Loading...</td>
                         </tr>
                         <tr>
                             <td>Network name (SSID)</td>
                             <td id="WiFissid"></td>
-                        </tr>
-                        <tr>
-                            <td>Network password</td>
-                            <td id="WiFipassword"></td>
                         </tr>
                         <tr>
                             <td>Wireless channel</td>
@@ -143,11 +104,29 @@
                 </table>
             </div>
         </div>
-        <div class="panel panel-info">
-            <div class="panel-heading">
-                <h3 class="panel-title">Most recent changes (30.08.2020)</h3>
+        <div class="card mb-3">
+            <div class="card-header text-bg-info">Recent changes (25.10.2026)</div>
+            <div class="card-body">
+                <span>- Fixed compilation with <code>FastLED 3.10</code> and ESP8266 Arduino core <code>3.1.x</code></span><br />
+                <span>- Moved web interface storage from deprecated <code>SPIFFS</code> to <code>LittleFS</code> (file system image must be uploaded again)</span><br />
+                <span>- <b>Firmware & Wi-Fi</b> page, <b>Filesystem editor</b> and Arduino OTA uploads are now password protected</span><br />
+                <span>- Wi-Fi password is no longer shown on this page or sent by the <code>/wifi</code> endpoint</span><br />
+                <span>- Settings are saved to EEPROM 3 seconds after the last change instead of on every slider movement, reducing flash wear</span><br />
+                <span>- Fixed <code>Sinelon</code> and <code>Juggle</code> effects writing past the end of the LED strip</span><br />
+                <span>- Values sent to the controller are now limited to their valid ranges</span><br />
+                <span>- Fixed autoplay stopping after ~49 days of uptime</span><br />
+                <span>- Changes made on another device now also update the solid color picker and visible controls</span><br />
+                <span>- Updated firmware export instructions on <b>Firmware & Wi-Fi</b> page for Arduino IDE 2</span><br />
+                <span>- Web interface moved to <code>Bootstrap 5.3</code> (Bootswatch <code>Flatly</code> theme) and <code>jQuery 4.0</code>, MiniColors updated to <code>2.3.6</code>, Ace editor to <code>1.44.0</code></span><br />
+                <span>- Removed web fonts (Google Fonts and Glyphicons): pages use system fonts and inline icons, and load without internet access</span><br />
+                <span>- Removed <code>Isotope</code> library, <b>Simple mode</b> grids use CSS layout now</span><br />
+                <span>- Admin credentials moved to <code>secrets.h</code> (not stored in the public repository), see <code>secrets.example.h</code></span><br />
+                <span>- Web server can serve gzip compressed files: when only <code>file.js.gz</code> exists it is sent for <code>file.js</code></span><br />
             </div>
-            <div class="panel-body">
+        </div>
+        <div class="card mb-3">
+            <div class="card-header text-bg-info">Changes (30.08.2020)</div>
+            <div class="card-body">
                 <span>- Added <code>Meteor</code> and <code>Colorful meteor</code> effect</span><br />
                 <span>- Added <code>Sakura</code> and <code>Aurora</code> color palette</span><br />
                 <span>- Added <code>Midnight lake</code> effect and made it use selected color palette</span><br />
@@ -159,13 +138,11 @@
                 <span>- Added <b>Multi controller</b> mode to allow controlling multiple ESP8266 modules at the same time</span><br />
             </div>
         </div>
-    	<div class="panel panel-info">
-            <div class="panel-heading">
-                <h3 class="panel-title">Recent changes (08.02.2020)</h3>
-            </div>
-            <div class="panel-body">
+        <div class="card mb-3">
+            <div class="card-header text-bg-info">Changes (08.02.2020)</div>
+            <div class="card-body">
                 <span>- Massive code refactoring for easier understanding and modification</span><br />
-                <span>- Removed all unneccesary functions</span><br />
+                <span>- Removed all unnecessary functions</span><br />
                 <span>- Removed legacy IR (Infrared) support due to code changes</span><br />
                 <span>- Re-implemented Websocket functionality - now when changing parameter on <b>Device A</b> it also changes on <b>Device B</b> browser window</span><br />
                 <span>- Added extra information on <b>Firmware update</b> page</span><br />
@@ -174,33 +151,29 @@
                 <span>- Default <code>Twinkle</code> speed increased to reduce lag</span><br />
                 <span>- <code>Rainbow</code> and <code>Rainbow with glitter</code> effect now respects speed setting</span><br />
                 <span>- <b>TwinkleFOX.h</b> effect speed and density will be saved to EEPROM. </span><br />
-            	<span>- Fixed boundaries for effects in <b>TwinkleFOX.h</b> to prevent setting speed and density parameters to 0</span><br />
+                <span>- Fixed boundaries for effects in <b>TwinkleFOX.h</b> to prevent setting speed and density parameters to 0</span><br />
                 <span>- Updated <b>Readme.md</b> and added new images to GitHub repo</span><br />
                 <span>- Added required libraries and tools to GitHub repo</span><br />
                 <span>- Updated <code>Isotope</code> JavaScript library to latest version</span><br />
-				<span>- Moved <code>Filesystem editor</code> assets to external files <code>editor.js</code> and <code>editor.css</code></span><br />
-				<span>- Unminified <code>edit.htm</code> for easier editing</span><br />
-				<span>- Updated external library <code>ace.js</code> to version <code>1.4.7</code> (used for file editor functionality)</span><br />
+                <span>- Moved <code>Filesystem editor</code> assets to external files <code>editor.js</code> and <code>editor.css</code></span><br />
+                <span>- Unminified <code>edit.htm</code> for easier editing</span><br />
+                <span>- Updated external library <code>ace.js</code> to version <code>1.4.7</code> (used for file editor functionality)</span><br />
             </div>
         </div>
-        <div class="panel panel-info">
-            <div class="panel-heading">
-                <h3 class="panel-title">Recent changes (08.08.2019)</h3>
-            </div>
-            <div class="panel-body">
+        <div class="card mb-3">
+            <div class="card-header text-bg-info">Changes (08.08.2019)</div>
+            <div class="card-body">
                 <span>- Updated Bootstrap v3 theme to <code>Flatly</code></span><br />
-                <span>- Info page desing updated</span><br />
+                <span>- Info page design updated</span><br />
                 <span>- Updated info on <b>WiFi settings</b> page and disabled unavailable WiFi options</span><br />
                 <span>- Updated <b>Simple mode</b> with content sections</span><br />
                 <span>- Improved <b>Firmware update</b> page</span><br />
             </div>
         </div>
 
-        <div class="panel panel-info">
-            <div class="panel-heading">
-                <h3 class="panel-title">Recent changes (09.03.2019)</h3>
-            </div>
-            <div class="panel-body">
+        <div class="card mb-3">
+            <div class="card-header text-bg-info">Changes (09.03.2019)</div>
+            <div class="card-body">
                 <span>- <code>Gradient sweep</code> effect now offers choice of 33 new effects</span><br />
                 <span>- Modified <code>Gradient sweep</code> effect to offer manual gradient choice to user</span><br />
                 <span>- Added new fields and arrays to store latest effects in memory and EEPROM</span><br />
@@ -208,11 +181,9 @@
             </div>
         </div>
 
-        <div class="panel panel-info">
-            <div class="panel-heading">
-                <h3 class="panel-title">Previous changes (17.02.2019)</h3>
-            </div>
-            <div class="panel-body">
+        <div class="card mb-3">
+            <div class="card-header text-bg-info">Changes (17.02.2019)</div>
+            <div class="card-body">
                 <span>- This information page added</span><br />
                 <span>- Link to GitHub added in navigation bar</span><br />
                 <span>- Strings and field names updated to match project wide</span><br />
@@ -224,7 +195,7 @@
                 <span>- Added <code>Red & Green & Blue Twinkles</code> effect</span><br />
                 <span>- Added <code>Blue & Incandescent Twinkles</code> effect</span><br />
                 <span>- Changed MCU communication pin to pin <code>2</code></span><br />
-                <span>- Added disclaimer on <code><a href="wifi.htm">Wi-Fi settings</a></code> page indicating broken feature</span><br />
+                <span>- Added disclaimer on <b>Wi-Fi settings</b> page indicating broken feature (page later removed)</span><br />
                 <span>- Reduced HTML and image size to improve performance</span><br />
                 <span>- Updated <code><a href="https://ace.c9.io/" title="Ace library">Ace library</a></code> to the latest version</span><br />
                 <span>- Added navigation bar in <code>Simple mode</code></span><br />
@@ -234,11 +205,9 @@
             </div>
         </div>
 
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">Contributors</h3>
-            </div>
-            <div class="panel-body">
+        <div class="card mb-3">
+            <div class="card-header text-bg-primary">Contributors</div>
+            <div class="card-body">
                 <span><b>Based on original work:</b> <a href="https://github.com/jasoncoon/esp8266-fastled-webserver" title="Jason Coon on Github">FastLED + ESP8266 Web Server by Jason Coon</a></span><br />
                 <span><b>This release modified and maintained by:</b> <a href="https://github.com/ArtursGailis1995/esp8266-fastled-webserver" title="Arturs Gailis on Github">FastLED + ESP8266 Web Server by Arturs Gailis</a></span><br />
                 <span><b>Idea of hiding UI parts:</b> <a href="https://github.com/alvinycheung/esp8266-fastled-webserver" title="Alvin Cheung on Github">FastLED + ESP8266 Web Server by Alvin Cheung</a></span><br />
@@ -248,7 +217,32 @@
         </div>
     </div>
     <!-- request js from the ESP8266 web server -->
-    <script src="js/jquery-3.1.1.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.min.js?v=2"></script>
+    <script src="js/bootstrap.bundle.min.js?v=2"></script>
+    <script>
+        // Text for ESP8266 wl_status_t codes
+        var wifiStatusNames = ["Idle", "Network not found", "Scan completed", "Connected", "Connection failed", "Connection lost", "Wrong password", "Disconnected"];
+
+        function signalQuality(rssi) {
+            if (rssi >= -55) return "excellent";
+            if (rssi >= -67) return "good";
+            if (rssi >= -75) return "fair";
+            return "weak";
+        }
+
+        $.getJSON("/wifi", function(wifi) {
+            var rssi = parseInt(wifi.rssi, 10);
+
+            wifi.status = wifiStatusNames[wifi.status] || ("Unknown (" + wifi.status + ")");
+            wifi.rssi = isNaN(rssi) ? wifi.rssi : rssi + " dBm (" + signalQuality(rssi) + ")";
+
+            // textContent, not innerHTML: SSID and hostname are user supplied
+            $.each(["status", "ssid", "channel", "rssi", "bssid", "mac", "localIP", "netmask", "gateway", "hostname", "dns1", "dns2", "softAPIP"], function(index, key) {
+                $("#WiFi" + key).text(wifi[key]);
+            });
+        }).fail(function() {
+            $("#WiFistatus").text("Could not load Wi-Fi information");
+        });
+    </script>
 </body>
 </html>

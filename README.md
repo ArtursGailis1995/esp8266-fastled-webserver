@@ -34,7 +34,7 @@ Web App
 
 The web app uses [Bootstrap 5](https://getbootstrap.com) with the [Bootswatch Flatly](https://bootswatch.com/flatly/) theme, [jQuery](https://jquery.com) and [jQuery MiniColors](https://github.com/claviska/jquery-minicolors) for the color picker. It uses system fonts and inline icons, so it works without internet access (only the file system editor loads the [Ace editor](https://ace.c9.io) from a CDN).
 
-Event handlers for the controls are used, so you don't have to click a 'Send' button after making changes to the LED strip parameters. Sliders and the color picker use a delayed event handler, to prevent flooding the ESP8266 web server with too many requests. Changes are pushed to all open browser windows over a WebSocket. The web app is stored in the LittleFS file system (on-board flash memory).
+Event handlers for the controls are used, so you don't have to click a 'Send' button after making changes to the LED strip parameters. Sliders and the color picker use a delayed event handler, to prevent flooding the ESP8266 web server with too many requests. Changes are pushed to all open browser windows over a WebSocket. Brightness is shown in percent and durations in seconds. The app uses a dark theme by default, the sun / moon button in the navigation bar switches between dark and light theme (remembered by the browser). The web app is stored in the LittleFS file system (on-board flash memory).
 
 * **Main page provides access to all features related to controlling RGB LED strip parameters and features. Only the settings used by the selected pattern are shown**<br/>
 <img src="/images/WebApp_Main.jpg" alt="Web app main page" width="850"/>
@@ -129,14 +129,14 @@ The firmware implements basic [RESTful web services](https://en.wikipedia.org/wi
 |---|---|---|
 | `/all` | GET | Returns all fields and values as JSON |
 | `/power` | POST | `value` 0 or 1 |
-| `/brightness` | POST | `value` 1-255 |
+| `/brightness` | POST | `value` 0-255 (the web app shows it as 0-100 %) |
 | `/pattern`, `/patternName` | POST | `value` pattern index or name |
 | `/palette`, `/paletteName` | POST | `value` palette index or name |
 | `/gradientPalette`, `/gradientPaletteName` | POST | `value` gradient index or name |
 | `/solidColor` | POST | `r`, `g`, `b` 0-255 |
 | `/speed` | POST | `value` 1-255 |
 | `/autoplay` | POST | `value` 0 or 1 |
-| `/autoplayDuration` | POST | `value` 3-250 seconds |
+| `/autoplayDuration` | POST | `value` 3-250 (seconds) |
 | `/cooling`, `/sparking` | POST | `value` 1-255 (Fire and Water effects) |
 | `/twinkleSpeed` | POST | `value` 2-7 |
 | `/twinkleDensity` | POST | `value` 1-8 |

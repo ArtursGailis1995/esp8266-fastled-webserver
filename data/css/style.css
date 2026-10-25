@@ -67,3 +67,54 @@
 .navbar-dark img[alt="GitHub"] {
   filter : invert(1);
 }
+
+/* Theme switch shows the theme it switches to */
+[data-bs-theme="dark"] .icon-moon,
+[data-bs-theme="light"] .icon-sun {
+  display : none;
+}
+
+#btnTheme {
+  background : none;
+  border : 0;
+}
+
+/* Flatly primary color is dark navy, on a dark background buttons use the theme's teal instead */
+[data-bs-theme="dark"] .btn-primary,
+[data-bs-theme="dark"] .btn-outline-primary {
+  --bs-btn-color : var(--bs-body-color);
+  --bs-btn-border-color : var(--bs-success);
+  --bs-btn-hover-color : #fff;
+  --bs-btn-hover-bg : var(--bs-success);
+  --bs-btn-hover-border-color : var(--bs-success);
+  --bs-btn-active-color : #fff;
+  --bs-btn-active-bg : var(--bs-success);
+  --bs-btn-active-border-color : var(--bs-success);
+}
+
+[data-bs-theme="dark"] .btn-primary {
+  --bs-btn-color : #fff;
+  --bs-btn-bg : var(--bs-success);
+}
+
+[data-bs-theme="dark"] .btn-outline-secondary {
+  --bs-btn-color : var(--bs-body-color);
+}
+
+/* Separate rules: a browser drops a whole rule with an unknown pseudo-element */
+[data-bs-theme="dark"] .form-range::-webkit-slider-thumb {
+  background-color : var(--bs-success);
+}
+
+[data-bs-theme="dark"] .form-range::-moz-range-thumb {
+  background-color : var(--bs-success);
+}
+
+[data-bs-theme="dark"] .grid-item-color.selected {
+  outline-color : #fff;
+}
+
+[data-bs-theme="dark"] .minicolors-panel {
+  background-color : var(--bs-body-bg);
+  border-color : var(--bs-border-color);
+}

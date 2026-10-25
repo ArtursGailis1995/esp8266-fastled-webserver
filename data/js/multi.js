@@ -191,37 +191,48 @@ function addNumberField(field) {
   var input = template.find(".input");
   var slider = template.find(".slider");
   slider.attr("id", "input-" + field.name);
-  if (field.min) {
-    input.attr("min", field.min);
-    slider.attr("min", field.min);
+  // Some fields are shown in other units than the controller uses, see common.js
+  var unit = fieldUnit(field.name);
+  var min = unit.min !== undefined ? unit.min : field.min;
+  var max = unit.max !== undefined ? unit.max : field.max;
+
+  if (min !== undefined) {
+    input.attr("min", min);
+    slider.attr("min", min);
   }
-  if (field.max) {
-    input.attr("max", field.max);
-    slider.attr("max", field.max);
+  if (max !== undefined) {
+    input.attr("max", max);
+    slider.attr("max", max);
   }
   if (field.step) {
     input.attr("step", field.step);
     slider.attr("step", field.step);
   }
-  input.val(field.value);
-  slider.val(field.value);
+  if (unit.unit) {
+    template.find(".unit").text(unit.unit).removeClass("d-none");
+  }
+
+  input.val(toDisplayValue(field.name, field.value));
+  slider.val(toDisplayValue(field.name, field.value));
+
+  function setValue(value) {
+    value = Math.min(Number(input.attr("max")), Math.max(Number(input.attr("min")), Number(value)));
+    input.val(value);
+    slider.val(value);
+    field.value = toFieldValue(field.name, value);
+    delayPostValue(field.name, field.value);
+  }
 
   slider.on("input", function() {
     input.val($(this).val());
   });
 
   slider.on("change", function() {
-    var value = $(this).val();
-    input.val(value);
-    field.value = value;
-    delayPostValue(field.name, value);
+    setValue($(this).val());
   });
 
   input.on("change", function() {
-    var value = $(this).val();
-    slider.val(value);
-    field.value = value;
-    delayPostValue(field.name, value);
+    setValue($(this).val());
   });
 
   $("#form").append(template);
@@ -694,7 +705,7 @@ function updateFieldValue(name, value) {
   var type = group.attr("data-field-type");
 
   if (type == "Number") {
-    group.find(".input, .slider").val(value);
+    group.find(".input, .slider").val(toDisplayValue(name, value));
   } else if (type == "Boolean") {
     var btnOn = group.find("#btnOn" + name);
     var btnOff = group.find("#btnOff" + name);
@@ -751,13 +762,13 @@ function postValue(name, value) {
 
       console.log(url);
 
-      $("#status").html("Setting " + name + ": " + value + ", please wait...");
+      $("#status").html("Setting " + name + ": " + formatFieldValue(name, value) + ", please wait...");
 
       $.post(url, body, function(data) {
         if (data.name != null) {
           $("#status").html("Set " + name + ": " + data.name);
         } else {
-          $("#status").html("Set " + name + ": " + data);
+          $("#status").html("Set " + name + ": " + formatFieldValue(name, data));
         }
       })
       .fail(function() { $("#status").html("Fail: " + name + " on " + address); });
@@ -800,7 +811,7 @@ function postColor(name, value) {
         if (data.name != null) {
           $("#status").html("Set " + name + ": " + data.name);
         } else {
-          $("#status").html("Set " + name + ": " + data);
+          $("#status").html("Set " + name + ": " + formatFieldValue(name, data));
         }
       })
       .fail(function() { $("#status").html("Fail: " + name + " on " + address); });

@@ -125,3 +125,21 @@
 	background-color: #EEE;
 	padding: 5px
 }
+/* Dark theme (default, see js/common.js) */
+[data-bs-theme="dark"] body {
+	background-color: #1d1f21;
+	color: #c5c8c6
+}
+
+[data-bs-theme="dark"] .tvu {
+	color: #c5c8c6
+}
+
+[data-bs-theme="dark"] #editor,
+[data-bs-theme="dark"] #preview {
+	border-left-color: #333
+}
+
+[data-bs-theme="dark"] #preview {
+	background-color: #282a2e
+}

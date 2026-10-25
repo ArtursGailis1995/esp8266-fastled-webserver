@@ -402,7 +402,9 @@ function onBodyLoad() {
 	var d = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, a, b) {
 		c[a] = b
 	});
-	var e = createEditor("editor", c.file, c.lang, c.theme);
+	// Code editor follows the page theme (dark by default, see common.js)
+	var theme = c.theme || (document.documentElement.getAttribute("data-bs-theme") == "dark" ? "tomorrow_night" : "textmate");
+	var e = createEditor("editor", c.file, c.lang, theme);
 	var f = createTree("tree", e);
 	createFileUploader("uploader", f, e)
 };

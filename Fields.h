@@ -128,7 +128,7 @@ String getName() {
 FieldList fields = {
   { "name", "Name", LabelFieldType, 0, 0, getName },
   { "power", "Power", BooleanFieldType, 0, 1, getPower },
-  { "brightness", "Brightness", NumberFieldType, 1, 255, getBrightness },
+  { "brightness", "Brightness", NumberFieldType, 0, 255, getBrightness },
   { "pattern", "Pattern", SelectFieldType, 0, patternCount - 1, getPattern, getPatterns },
   { "palette", "Palette", SelectFieldType, 0, paletteCount - 1, getPalette, getPalettes },
   { "gradientPalette", "Gradient palette", SelectFieldType, 0, gGradientPaletteCount - 1, getGradientPalette, getGradientPalettes },

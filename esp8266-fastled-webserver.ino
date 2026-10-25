@@ -517,7 +517,7 @@ void setup() {
   });
 
   webServer.on("/brightness", HTTP_POST, []() {
-    setBrightness(argInRange("value", 1, 255));
+    setBrightness(argInRange("value", 0, 255));
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(brightness);
   });

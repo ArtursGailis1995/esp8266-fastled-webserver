@@ -36,19 +36,23 @@ The web app uses [Bootstrap 5](https://getbootstrap.com) with the [Bootswatch Fl
 
 Event handlers for the controls are used, so you don't have to click a 'Send' button after making changes to the LED strip parameters. Sliders and the color picker use a delayed event handler, to prevent flooding the ESP8266 web server with too many requests. Changes are pushed to all open browser windows over a WebSocket. The web app is stored in the LittleFS file system (on-board flash memory).
 
-Screenshots below show the previous version of the interface, the layout is the same.
+* **Main page provides access to all features related to controlling RGB LED strip parameters and features. Only the settings used by the selected pattern are shown**<br/>
+<img src="/images/WebApp_Main.jpg" alt="Web app main page" width="850"/>
 
-* **Main page provides access to all features related to controlling RGB LED strip parameters and features**<br/>
-<img src="/images/WEBApp_Main.jpg" alt="WEB App Main window" width="850"/>
+* **Simple mode allows to control power state and brightness, change active pattern or set static color of RGB LED strip**<br/>
+<img src="/images/WebApp_Simple.jpg" alt="Web app simple mode" width="850"/>
 
-* **Simple mode allows to control power state, change active mode or set static color of RGB LED strip**<br/>
-<img src="/images/WEBApp_Simple.jpg" alt="WEB App Simple window" width="850"/>
+* **Discovery & Sync scans the local network for LED controllers and controls all selected controllers at the same time**<br/>
+<img src="/images/WebApp_Discovery.jpg" alt="Web app discovery and sync page" width="850"/>
 
-* **Firmware update page allows to upload precompiled firmware to ESP8266 in order to update it without connecting to PC**<br/>
-<img src="/images/WEBApp_FW.jpg" alt="WEB App Firmware update window" width="850"/>
+* **Filesystem editor lists the files stored in LittleFS and allows to edit, upload, download or delete them. It is password protected and needs internet access to load the code editor**<br/>
+<img src="/images/WebApp_Editor.jpg" alt="Web app filesystem editor" width="850"/>
+
+* **Firmware & Wi-Fi page allows to upload precompiled firmware or a LittleFS image to ESP8266 without connecting it to a PC, and to reset Wi-Fi settings. It is password protected**<br/>
+<img src="/images/WebApp_FW.jpg" alt="Web app firmware and Wi-Fi page" width="850"/>
 
 * **Information page shows Wi-Fi status and lists recent changes to this project**<br/>
-<img src="/images/WEBApp_Info.jpg" alt="WEB App Information window" width="850"/>
+<img src="/images/WebApp_Info.jpg" alt="Web app information page" width="850"/>
 
 Installing
 -----------
